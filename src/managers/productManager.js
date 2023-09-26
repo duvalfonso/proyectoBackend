@@ -22,7 +22,7 @@ export default class ProductManager {
   getProductById (id) {
     const product = this.products.find(product => product.id === id)
     if (!product) {
-      throw new Error('Product not found')
+      console.error('Product not found')
     }
     return product
   }
