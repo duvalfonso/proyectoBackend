@@ -5,6 +5,7 @@ Este es un proyecto básico que implementa el uso de clases de javascript.
 - Agregar productos a la lista.
 - Id autoincrementable en cada producto.
 - Verificación del código de producto no repetible.
+- File System para persistencia de información.
 
 ## `npm start`
 Ejecuta el archivo app.js y muestra el resultado por consola
