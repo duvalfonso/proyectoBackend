@@ -39,8 +39,7 @@ export default class ProductManager {
     const id = this.products.length > 0 ? this.products[this.products.length - 1].id + 1 : 1
     const newProduct = { id, title, description, price, thumbnail, code, stock }
     this.products.push(newProduct)
-    await this.saveData()
-    console.log('Product added successfully:', newProduct)
+    await this.saveData().then(console.log('Product added successfully:', newProduct))
   }
 
   async getProductsList () {
@@ -49,10 +48,9 @@ export default class ProductManager {
   }
 
   async getProductById (id) {
-    const product = await this.products.find(product => product.id === id)
+    const product = this.products.find(product => product.id === id)
     if (!product) {
-      console.error('Product not found')
-      throw new Error('Product not found!')
+      throw new Error(`Product with id: ${id} not found!`)
     }
     console.log(product)
     return product
@@ -64,9 +62,9 @@ export default class ProductManager {
       throw new Error('Product not found')
     }
 
-    if (id === updatedProduct.id) return
+    const { id: _, ...newData } = updatedProduct
 
-    this.products[index] = { ...this.products[index], ...updatedProduct }
+    this.products[index] = { ...this.products[index], ...newData }
     await this.saveData()
   }
 

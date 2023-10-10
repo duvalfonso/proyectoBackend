@@ -1,24 +1,48 @@
+import express from 'express'
 import ProductManager from './managers/productManager.js'
 
-const productManager = new ProductManager('./files/products.json');
+const productManager = new ProductManager('./files/products.json')
 
-(async () => {
+const app = express()
+const PORT = process.env.PORT || 8080
+
+const server = app.listen(PORT, () => console.log(`Listening on ${PORT}. ${server} `))
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+async function initializeProductManager () {
   await productManager.initialize()
+}
 
-  await productManager.addProduct('Product 1', 'Description 1', 9.99, 'thumbnail1.jpg', '10000', 10)
-  await productManager.addProduct('Product 2', 'Description 2', 19.99, 'thumbnail2.jpg', '10001', 5)
-  await productManager.addProduct('Product 3', 'Description 3', 49.99, 'thumbnail3.jpg', '10002', 15)
-  await productManager.addProduct('Product 4', 'Description 4', 13.99, 'thumbnail4.jpg', '10003', 5)
-  await productManager.addProduct('Product 5', 'Description 5', 12.99, 'thumbnail5.jpg', '10004', 10)
-  await productManager.addProduct('Product 6', 'Description 6', 11.99, 'thumbnail6.jpg', '10005', 20)
-  await productManager.addProduct('Product 7', 'Description 7', 11.49, 'thumbnail7.jpg', '10006', 10)
-  await productManager.addProduct('Product 8', 'Description 8', 3.99, 'thumbnail8.jpg', '10007', 12)
-  await productManager.addProduct('Product 9', 'Description 9', 4.99, 'thumbnail9.jpg', '10008', 24)
-  await productManager.addProduct('Product 10', 'Description 10', 41.99, 'thumbnail10.jpg', '10009', 31)
-  await productManager.getProductById(4)
-  await productManager.updateProduct(4, { price: 29.99, stock: 3 })
-  await productManager.getProductById(4)
-  await productManager.getProductsList()
-  await productManager.deleteProduct(10)
-  await productManager.getProductsList()
-})()
+initializeProductManager()
+
+app.get('/products', async (req, res) => {
+  const limit = Number(req.query.limit)
+  console.log(limit)
+  const products = await productManager.getProductsList()
+  if (limit < 0 || isNaN(limit)) {
+    return res.status(400).send({ error: 'Invalid limit parameter. Only use numbers greater than 0' })
+  }
+  if (!limit) {
+    return res.send({ status: 'success', payload: products })
+  }
+  const limitResult = products.slice(0, limit)
+  res.send({ status: 'success', payload: limitResult })
+})
+
+app.get('/products/:pid', async (req, res, next) => {
+  try {
+    const pid = Number(req.params.pid)
+    if (isNaN(pid)) return res.status(400).send({ error: 'Product id must be a number!' })
+    const productById = await productManager.getProductById(pid)
+    res.send({ status: 'success', payload: productById })
+  } catch (err) {
+    next(err.message)
+  }
+})
+
+app.use((err, req, res, next) => {
+  console.error(err)
+  res.status(404).send({ error: 'Not found' }).end()
+})
