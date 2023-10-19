@@ -28,18 +28,34 @@ export default class ProductManager {
     }
   }
 
-  async addProduct (title, description, price, thumbnail, code, stock) {
-    if (!title || !description || !price || !thumbnail || !code || !stock) return
-    const existingProduct = this.products.find(product => product.code === code)
-    if (existingProduct) {
-      console.log('A product with the same five-digit code: already exists!')
-      return
+  async addProduct (title, description, price, thumbnail, code, stock, status) {
+    if (!title || !description || !price || !thumbnail || !code || !stock) {
+      throw new Error('All the fields are required!')
     }
 
-    const id = this.products.length > 0 ? this.products[this.products.length - 1].id + 1 : 1
-    const newProduct = { id, title, description, price, thumbnail, code, stock }
+    const existingProduct = this.products.find(product => product.code === code)
+    if (existingProduct) {
+      throw new Error('A product with the same five-digit code: already exists!')
+    }
+
+    const id = this.products.length > 0
+      ? this.products[this.products.length - 1].id + 1
+      : 1
+
+    const newProduct = {
+      id,
+      title,
+      description,
+      price,
+      thumbnail,
+      code,
+      stock,
+      status: typeof status !== 'undefined' ? status : true
+    }
     this.products.push(newProduct)
-    await this.saveData().then(console.log('Product added successfully:', newProduct))
+    await this.saveData()
+    console.log('Product added successfully:', newProduct)
+    return newProduct
   }
 
   async getProductsList () {
@@ -52,6 +68,7 @@ export default class ProductManager {
     if (!product) {
       throw new Error(`Product with id: ${id} not found!`)
     }
+
     console.log(product)
     return product
   }
@@ -59,7 +76,11 @@ export default class ProductManager {
   async updateProduct (id, updatedProduct) {
     const index = this.products.findIndex(product => product.id === id)
     if (index === -1) {
-      throw new Error('Product not found')
+      throw new Error('Product not found.')
+    }
+
+    if (updatedProduct.id && updatedProduct.id !== id) {
+      throw new Error('The ID cannot be changed!')
     }
 
     const { id: _, ...newData } = updatedProduct

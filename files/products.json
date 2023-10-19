@@ -87,6 +87,27 @@
 		"price": 41.99,
 		"thumbnail": "thumbnail10.jpg",
 		"code": "10009",
-		"stock": 31
+		"stock": 3
+	},
+	{
+		"id": 11,
+		"title": "Product 11",
+		"description": "Description 11",
+		"price": 41.99,
+		"thumbnail": "thumbnail11.jpg",
+		"code": "10010",
+		"stock": 56
+	},
+	{
+		"id": 12,
+		"title": "Product 12",
+		"description": "Description 12",
+		"price": 31.99,
+		"thumbnail": [
+			"thumbnail12.jpg"
+		],
+		"code": "10011",
+		"stock": 4,
+		"status": true
 	}
 ]
