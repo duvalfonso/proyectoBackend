@@ -59,7 +59,6 @@ export default class ProductManager {
   }
 
   async getProductsList () {
-    console.log('Products List:', this.products)
     return this.products
   }
 
