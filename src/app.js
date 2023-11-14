@@ -6,8 +6,16 @@ import cartsRouter from './routes/cart.router.js'
 import handlebars from 'express-handlebars'
 import viewsRouter from './routes/views.router.js'
 
+import monProductsRouter from './routes/mongooseProduct.router.js'
+import monCartsRouter from './routes/mongooseCart.router.js'
+
 import { Server } from 'socket.io'
-import ProductManager from './managers/productManager.js'
+import ProductManager from './dao/fileSystem/managers/productManager.js'
+
+import mongoose from 'mongoose'
+
+import dotenv from 'dotenv'
+dotenv.config()
 
 const productManager = new ProductManager('./files/products.json')
 
@@ -20,6 +28,12 @@ const app = express()
 const PORT = process.env.PORT || 8080
 
 const server = app.listen(PORT, () => console.log(`Listening on ${PORT}. ${server} `))
+
+const connection = mongoose.connect(
+  `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.fueracc.mongodb.net/${process.env.DEFAULT_DATA_BASE}?retryWrites=true&w=majority`
+)
+console.log(connection)
+
 const io = new Server(server)
 
 app.use(express.json())
@@ -40,6 +54,9 @@ app.use('/realtimeproducts', viewsRouter)
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
 
+app.use('/api/monproducts', monProductsRouter)
+app.use('/api/moncarts', monCartsRouter)
+
 io.on('connection', socket => {
   console.log('New client connected')
 
@@ -54,5 +71,5 @@ io.on('connection', socket => {
 
 app.use((err, req, res, next) => {
   console.error(err)
-  res.status(400).send({ error: 'Not found' }).end()
+  res.status(500).send({ error: 'Unexpected Error Ocurred' }).end()
 })

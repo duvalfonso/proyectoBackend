@@ -1,6 +1,6 @@
 import express from 'express'
-import CartManager from '../managers/cartManager.js'
-import ProductManager from '../managers/productManager.js'
+import CartManager from '../dao/fileSystem/managers/cartManager.js'
+import ProductManager from '../dao/fileSystem/managers/productManager.js'
 
 const app = express()
 app.use(express.json())

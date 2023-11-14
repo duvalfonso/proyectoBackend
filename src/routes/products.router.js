@@ -1,5 +1,5 @@
 import express from 'express'
-import ProductManager from '../managers/productManager.js'
+import ProductManager from '../dao/fileSystem/managers/productManager.js'
 
 const app = express()
 app.use(express.json())
