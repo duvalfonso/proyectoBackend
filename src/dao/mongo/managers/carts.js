@@ -8,7 +8,7 @@ export default class MonCartManager {
   }
 
   getCartById = async (id) => {
-    return await cartModel.findOne(id).lean()
+    return await cartModel.findOne({ _id: id }).lean()
   }
 
   createCart = async () => {
@@ -56,6 +56,34 @@ export default class MonCartManager {
     }
   }
 
+  updateQuantity = async (cartId, productId, quantity) => {
+    const cart = await cartModel.findOne({ _id: cartId })
+    if (!cart) { throw new Error(`Cart with id: ${cartId} not found!`) }
+
+    const productInCart = cart.items.find(item => item.productId.toString() === productId)
+    if (!productInCart) { throw new Error(`Product with id: ${productId} not found!`) }
+
+    if (quantity === 0) {
+      cart.items = cart.items.filter(item => item.productId.toString() !== productId)
+    }
+
+    if (quantity > 0) {
+      productInCart.quantity = quantity
+      productInCart.total = productInCart.quantity * productInCart.price
+    }
+
+    cart.subTotal = cart.items.reduce((acc, item) => acc + item.total, 0)
+
+    if (quantity < 0) { throw new Error(`Quantity should be only positive numbers to modify, or 0 to delete the product from the cart, instead received ${quantity}`) }
+
+    await cart.save()
+
+    return {
+      items: cart.items,
+      subTotal: cart.subTotal
+    }
+  }
+
   removeProduct = async (cartId, productId) => {
     const cart = await cartModel.findOne({ _id: cartId })
 
@@ -75,5 +103,17 @@ export default class MonCartManager {
       items: cart.items,
       subTotal: cart.subTotal
     }
+  }
+
+  clearCart = async (cartId) => {
+    const cart = await cartModel.findOne({ _id: cartId })
+
+    if (!cart) {
+      throw new Error(`Cart with id: ${cartId} not found!`)
+    }
+
+    cart.items = []
+    cart.subTotal = 0
+    await cart.save()
   }
 }

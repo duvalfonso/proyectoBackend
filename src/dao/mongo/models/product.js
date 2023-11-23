@@ -7,6 +7,11 @@ const schema = new mongoose.Schema({
     type: String,
     required: true
   },
+  category: {
+    type: String,
+    enum: ['Category ONE', 'Category TWO', 'Category THREE'],
+    default: 'Category ONE'
+  },
   description: {
     type: String,
     required: true

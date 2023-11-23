@@ -7,7 +7,8 @@
   "scripts": {
     "lint": "eslint .",
     "start": "nodemon src/app.js",
-    "test": "node src/index.js"
+    "test": "node src/index.js",
+    "products": "node src/products.js"
   },
   "keywords": [],
   "author": "",

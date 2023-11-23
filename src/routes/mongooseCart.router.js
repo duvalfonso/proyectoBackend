@@ -23,7 +23,7 @@ router.get('/:cid', async (req, res) => {
   res.send({ status: 'success', payload: cart })
 })
 
-router.post('/:pid/cart/:cid', async (req, res) => {
+router.post('/:cid/product/:pid', async (req, res) => {
   try {
     const { pid, cid } = req.params
     const quantity = Number(req.body.quantity)
@@ -34,6 +34,22 @@ router.post('/:pid/cart/:cid', async (req, res) => {
       status: 'success',
       msg: 'Process successful',
       cartData: result
+    })
+  } catch (err) {
+    console.error(err)
+    res.status(400).json({ error: err.message })
+  }
+})
+
+router.put('/:cid/product/:pid', async (req, res) => {
+  const { cid, pid } = req.params
+  const quantity = Number(req.body.quantity)
+  try {
+    const updatedQuantity = await cartsService.updateQuantity(cid, pid, quantity)
+    res.json({
+      status: 'success',
+      message: 'Quantity updated',
+      cartData: updatedQuantity
     })
   } catch (err) {
     console.error(err)

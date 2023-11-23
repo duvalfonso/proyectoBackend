@@ -7,6 +7,8 @@ Este es un proyecto básico que implementa el uso de clases de javascript.
 - Verificación del código de producto no repetible.
 - File System para persistencia de información.
 - Métodos GET para consulta de datos en el documento JSON.
+- Sistema de persistencia adaptado a MongoDB en paralelo.
+- Lógica de carrito de compras y relación con productos.
 
 ## `npm start`
 Ejecuta a través de nodemon el archivo app.js y muestra el resultado por consola.

@@ -10,6 +10,11 @@ router.get('/', async (req, res) => {
   res.send({ status: 'success', payload: products })
 })
 
+router.get('/pid', async (req, res) => {
+  const product = await productsService.getProductById()
+  res.send({ status: 'success', payload: product })
+})
+
 router.post('/', uploader.array('thumbnail'), async (req, res) => {
   const { title, description, price, code, stock } = req.body
   if (!title || !description || !price || !code || !stock) {
