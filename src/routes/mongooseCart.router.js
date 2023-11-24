@@ -72,4 +72,17 @@ router.delete('/:cid/product/:pid', async (req, res) => {
   }
 })
 
+router.delete('/:cid', async (req, res) => {
+  try {
+    const { cid } = req.params
+    const result = await cartsService.clearCart(cid)
+    res.json({
+      status: 'success',
+      msg: `Cart with id ${cid} is now empty!`
+    })
+  } catch (err) {
+    console.error(err)
+  }
+})
+
 export default router

@@ -1,6 +1,14 @@
 import express from 'express'
 import ProductManager from '../dao/fileSystem/managers/productManager.js'
 
+import mongoose from 'mongoose'
+import productModel from '../dao/mongo/models/product.js'
+
+import dotenv from 'dotenv'
+dotenv.config()
+
+const URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.fueracc.mongodb.net/${process.env.DEFAULT_DATA_BASE}?retryWrites=true&w=majority`
+
 const productManager = new ProductManager('./files/products.json')
 
 async function initializeProductManager () {
@@ -11,11 +19,38 @@ initializeProductManager()
 const router = express.Router()
 
 router.get('/', async (req, res) => {
-  const result = await productManager.getProductsList()
+  const { limit = 10, page = 1, sort, search } = req.query
+  const criteria = {}
+  const options = { limit, page }
+  const result = await productModel.paginate(criteria, options)
+  if (sort) {
+    options.sort = { price: sort }
+  }
+  if (search) {
+    criteria.category = search
+  }
+  // res.status(200).json(buildResponsePaginated({ ...result, sort, search }))
+
+
   res.render('index', {
     result
   })
 })
+
+const buildResponsePaginated = (data) => {
+  return {
+    status: 'success',
+    payload: data.docs.map((doc) => doc.toJson()),
+    totalPages: data.totalPages,
+    prevPage: data.prevPage,
+    nextPage: data.nextPage,
+    page: data.page,
+    hasPrevPage: data.hasPrevPage,
+    hasNextPage: data.hasNextPage,
+    prevLink: data.hasPrevPage ? `http://localhost:8080/products?limit=${data.limit}&page=${data.prevPage}` : null,
+    nextLink: data.hasNextPage ? `http://localhost:8080/products?limit=${data.limit}&page=${data.nextPage}` : null
+  }
+}
 
 router.post('/', async (req, res) => {
   const { title, description, price, thumbnail, code, stock, status } = req.body
