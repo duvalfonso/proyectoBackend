@@ -16,7 +16,7 @@ router.get('/pid', async (req, res) => {
 })
 
 router.post('/', uploader.array('thumbnail'), async (req, res) => {
-  const { title, description, price, code, stock } = req.body
+  const { title, category, description, price, code, stock } = req.body
   if (!title || !category || !description || !price || !code || !stock) {
     return res
       .status(400)

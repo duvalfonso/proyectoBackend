@@ -115,5 +115,6 @@ export default class MonCartManager {
     cart.items = []
     cart.subTotal = 0
     await cart.save()
+    return cart
   }
 }

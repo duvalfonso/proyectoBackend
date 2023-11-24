@@ -49,7 +49,7 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use('/realtimeproducts', viewsRouter)
+app.use('/', viewsRouter)
 
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
