@@ -1,29 +1,29 @@
 <h1>Lista de productos</h1>
 <article>
-    <table>
-        <tr>
-            <th>Title</th>
-            <th>Price</th>
-            <th>Category</th>
-            <th>Thumbnail</th>
-            <th>Code</th>
-            <th>Stock</th>
-            <th>Status</th>
-        </tr>
-        <tbody>
-            {{#each payload}}
-            <tr>
-                <td>{{this.title}}</td>
-                <td>{{this.price}}</td>
-                <td>{{this.category}}</td>
-                <td>{{this.thumbnail}}</td>
-                <td>{{this.code}}</td>
-                <td>{{this.status}}</td>
-            </tr>
-            {{/each}}
-        </tbody>
-    </table>
-    <p>Página actual: {{page}}</p>
-    <a href="{{prevLink}}" role="button" {{#unless hasPrevPage}}disabled{{/unless}}>Anterior</a>
-    <a href="{{nextLink}}" role="button" {{#unless hasNextPage}}disabled{{/unless}}>Siguiente</a>
+	<table>
+		<tr>
+			<th>Title</th>
+			<th>Price</th>
+			<th>Category</th>
+			<th>Thumbnail</th>
+			<th>Code</th>
+			<th>Stock</th>
+			<th>Status</th>
+		</tr>
+		<tbody>
+			{{#each payload}}
+			<tr>
+				<td>{{this.title}}</td>
+				<td>{{this.price}}</td>
+				<td>{{this.category}}</td>
+				<td>{{this.thumbnail}}</td>
+				<td>{{this.code}}</td>
+				<td>{{this.status}}</td>
+			</tr>
+			{{/each}}
+		</tbody>
+	</table>
+	<p>Página actual: {{page}}</p>
+	<a href="{{prevLink}}" role="button" {{#unless hasPrevPage}}disabled{{/unless}}>Anterior</a>
+	<a href="{{nextLink}}" role="button" {{#unless hasNextPage}}disabled{{/unless}}>Siguiente</a>
 </article>

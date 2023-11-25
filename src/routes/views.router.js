@@ -1,5 +1,6 @@
 import express from 'express'
 import ProductManager from '../dao/fileSystem/managers/productManager.js'
+import { buildResponsePaginated } from '../utils.js'
 
 // import mongoose from 'mongoose'
 import ProductModel from '../dao/mongo/models/product.js'
@@ -18,7 +19,7 @@ initializeProductManager()
 
 const router = express.Router()
 
-router.get('/', async (req, res) => {
+router.get('/products', async (req, res) => {
   const { limit = 10, page = 1, sort, search } = req.query
   const criteria = {}
   const options = { limit, page }
@@ -35,33 +36,16 @@ router.get('/', async (req, res) => {
     criteria.category = search
   }
   const result = await ProductModel.paginate(criteria, options)
-  res.status(200).json(buildResponsePaginated({ ...result, sort, search }))
+  const urlBase = 'http://localhost:8080/'
+  const data = buildResponsePaginated({ ...result, sort, search }, urlBase)
 
-  // res.render('index', {
-  //   result
-  // })
+  res.render('index', {
+    title: 'Productos',
+    ...data
+  })
 })
 
-const buildResponsePaginated = (data) => {
-  return {
-    status: 'success',
-    payload: data.docs,
-    totalPages: data.totalPages,
-    prevPage: data.prevPage,
-    nextPage: data.nextPage,
-    page: data.page,
-    hasPrevPage: data.hasPrevPage,
-    hasNextPage: data.hasNextPage,
-    prevLink: data.hasPrevPage
-      ? `http://localhost:8080/?limit=${data.limit}&page=${data.prevPage}`
-      : null,
-    nextLink: data.hasNextPage
-      ? `http://localhost:8080/?limit=${data.limit}&page=${data.nextPage}`
-      : null
-  }
-}
-
-router.post('/', async (req, res) => {
+router.post('/products', async (req, res) => {
   const { title, description, price, thumbnail, code, stock, status } =
     req.body
   try {
@@ -82,7 +66,7 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.delete('/:id', async (req, res) => {
+router.delete('/products/:id', async (req, res) => {
   const id = Number(req.params.id)
   try {
     await productManager.deleteProduct(id)

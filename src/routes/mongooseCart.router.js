@@ -5,7 +5,7 @@ const router = Router()
 const cartsService = new MonCartManager()
 
 router.get('/', async (req, res) => {
-  const carts = await cartsService.getCarts()
+  const carts = await cartsService.getCarts().populate('Products.productId')
   res.send({ status: 'success', payload: carts })
 })
 
@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
 
 router.get('/:cid', async (req, res) => {
   const cid = req.params.cid
-  const cart = await cartsService.getCartById(cid)
+  const cart = await cartsService.getCartById(cid).populate('Products.productId')
   if (!cart) {
     return res.status(400).send({ status: 'error', error: `Cart with id: ${cid} not found!` })
   }

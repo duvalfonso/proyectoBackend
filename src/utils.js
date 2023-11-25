@@ -5,3 +5,24 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 export default __dirname
+
+const BASE_URL = 'http://localhost:8080/api'
+
+export const buildResponsePaginated = (data, baseUrl = BASE_URL) => {
+  return {
+    status: 'success',
+    payload: data.docs.map((doc) => doc.toJSON()),
+    totalPages: data.totalPages,
+    prevPage: data.prevPage,
+    nextPage: data.nextPage,
+    page: data.page,
+    hasPrevPage: data.hasPrevPage,
+    hasNextPage: data.hasNextPage,
+    prevLink: data.hasPrevPage
+      ? `${baseUrl}?limit=${data.limit}&page=${data.prevPage}${data.sort ? `&sort=${data.sort}` : null}${data.search ? `&search=${data.search}` : null}`
+      : null,
+    nextLink: data.hasNextPage
+      ? `${baseUrl}?limit=${data.limit}&page=${data.nextPage}${data.sort ? `&sort=${data.sort}` : null}${data.search ? `&search=${data.search}` : null}`
+      : null
+  }
+}
