@@ -11,6 +11,8 @@ Este es un proyecto básico que implementa el uso de clases de javascript.
 - Métodos GET para consultas de datos en MongoDB.
 - Lógica de carrito de compras y relación con productos.
 - Handlebars y Mongoose Paginate para visualización de datos.
+- Vista de productos con query de limite de resultados y ordenamiento asc/desc.
+- Vista de carrito de compras.
 
 ## `npm start`
 Ejecuta a través de nodemon el archivo app.js y muestra el resultado por consola.
