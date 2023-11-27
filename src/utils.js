@@ -6,9 +6,9 @@ const __dirname = dirname(__filename)
 
 export default __dirname
 
-const BASE_URL = 'http://localhost:8080/api'
+// const BASE_URL = 'http://localhost:8080/api'
 
-export const buildResponsePaginated = (data, baseUrl = BASE_URL) => {
+export const buildResponsePaginated = (data, baseUrl) => {
   return {
     status: 'success',
     payload: data.docs.map((doc) => doc.toJSON()),
@@ -19,10 +19,10 @@ export const buildResponsePaginated = (data, baseUrl = BASE_URL) => {
     hasPrevPage: data.hasPrevPage,
     hasNextPage: data.hasNextPage,
     prevLink: data.hasPrevPage
-      ? `${baseUrl}?limit=${data.limit}&page=${data.prevPage}${data.sort ? `&sort=${data.sort}` : null}${data.search ? `&search=${data.search}` : null}`
+      ? `${baseUrl}?limit=${data.limit}&page=${data.prevPage}${data.sort ? `&sort=${data.sort}` : ''}${data.search ? `&search=${data.search}` : ''}`
       : null,
     nextLink: data.hasNextPage
-      ? `${baseUrl}?limit=${data.limit}&page=${data.nextPage}${data.sort ? `&sort=${data.sort}` : null}${data.search ? `&search=${data.search}` : null}`
+      ? `${baseUrl}?limit=${data.limit}&page=${data.nextPage}${data.sort ? `&sort=${data.sort}` : ''}${data.search ? `&search=${data.search}` : ''}`
       : null
   }
 }

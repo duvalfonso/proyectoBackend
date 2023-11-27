@@ -1,6 +1,6 @@
-import { Router } from "express"
-import ProductModel from "../dao/mongo/models/product.js"
-import { buildResponsePaginated } from "../utils.js"
+import { Router } from 'express'
+import ProductModel from '../dao/mongo/models/product.js'
+import { buildResponsePaginated } from '../utils.js'
 
 const router = Router()
 
@@ -23,3 +23,5 @@ router.get('/', async (req, res) => {
   const result = await ProductModel.paginate(criteria, options)
   res.status(200).json(buildResponsePaginated({ ...result, sort, search }))
 })
+
+export default router

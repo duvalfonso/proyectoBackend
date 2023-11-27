@@ -1,0 +1,33 @@
+<h2>Detalle de compras</h2>
+<section>
+  <div class="list-header">
+    <p>Productos</p>
+    <p>Subtotal</p>
+  </div>
+  <div class="list-container">
+    <ul>
+      {{#each cartItems}}
+      {{#with this}}
+        <li class="list-item">
+          <img class="image" src="#" alt="{{productId.title}}" />
+          <div class="text-container">
+            <h3>{{productId.title}}</h3>
+            <p>{{productId.description}}</p>
+            <p>{{productId.category}}</p>
+            <div class="units-subtotal">
+            <p>{{quantity}} un. &times; ${{productId.price}}</p>
+            <p>${{total}}</p>
+            </div>
+          </div>
+
+        </li>
+        <div class="separator"></div>
+      {{/with}}
+      {{/each}}
+    </ul>
+  </div>
+  <div class="total">
+    <h5>Total: </h5>
+    <h5>${{cart.subTotal}}</h5>
+  </div>
+</section>

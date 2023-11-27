@@ -1,0 +1,35 @@
+.list-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.list-container ul {
+  .list-item {
+    display: flex;
+    text-transform: capitalize;
+
+    .image {
+      min-width: 10rem;
+    }
+
+    .text-container {
+      width: 100%;
+      .units-subtotal {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        inset: 0;
+      }
+    }
+  }
+
+  .separator {
+    border-top: 1px solid var(--muted-color);
+    margin-bottom: 1rem;
+  }
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+}

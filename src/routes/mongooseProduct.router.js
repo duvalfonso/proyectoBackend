@@ -1,22 +1,44 @@
 import { Router } from 'express'
 import MonProductManager from '../dao/mongo/managers/products.js'
 import uploader from '../services/uploader.js'
+import { buildResponsePaginated } from '../utils.js'
+
+import ProductModel from '../dao/mongo/models/product.js'
 
 const router = Router()
 const productsService = new MonProductManager()
 
 router.get('/', async (req, res) => {
-  const products = await productsService.getProductsList()
-  res.send({ status: 'success', payload: products })
+  const { limit = 10, page = 1, sort, search } = req.query
+  const criteria = {}
+  const options = { limit, page }
+  if (sort) {
+    options.sort = sort
+      ? sort === 'asc'
+        ? { price: 1 }
+        : sort === 'desc'
+          ? { price: -1 }
+          : null
+      : null
+  }
+  if (search) {
+    criteria.category = search
+  }
+  const products = await ProductModel.paginate(criteria, options)
+  const urlBase = 'http://localhost:8080/api/monproducts'
+  const data = buildResponsePaginated({ ...products }, urlBase)
+  res.send({
+    data
+  })
 })
 
-router.get('/pid', async (req, res) => {
+router.get('/:pid', async (req, res) => {
   const product = await productsService.getProductById()
   res.send({ status: 'success', payload: product })
 })
 
 router.post('/', uploader.array('thumbnail'), async (req, res) => {
-  const { title, category, description, price, code, stock } = req.body
+  const { title, category, description, price, code, stock, status } = req.body
   if (!title || !category || !description || !price || !code || !stock) {
     return res
       .status(400)
@@ -25,14 +47,16 @@ router.post('/', uploader.array('thumbnail'), async (req, res) => {
 
   const newProduct = {
     title,
+    category,
     description,
     price,
     code,
-    stock
+    stock,
+    status
   }
   const thumbnail = req.files.map(
     (file) =>
-      `${req.protocol}:://${req.hostname}:${process.env.PORT || 8080}/img/${file.filename}`
+      `${req.protocol}://${req.hostname}:${process.env.PORT || 8080}/img/${file.filename}`
 
   )
   if (!thumbnail) {
@@ -45,14 +69,16 @@ router.post('/', uploader.array('thumbnail'), async (req, res) => {
 
 router.put('/:pid', async (req, res) => {
   const pid = req.params.pid
-  const { title, description, price, code, stock } = req.body
+  const { title, category, description, price, code, stock, status } = req.body
 
   const updatedProduct = {
     title,
+    category,
     description,
     price,
     code,
-    stock
+    stock,
+    status
   }
 
   const product = await productsService.getProductById({ _id: pid })

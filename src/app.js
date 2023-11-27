@@ -5,6 +5,7 @@ import productsRouter from './routes/products.router.js'
 import cartsRouter from './routes/cart.router.js'
 import handlebars from 'express-handlebars'
 import viewsRouter from './routes/views.router.js'
+import indexRouter from './routes/index.router.js'
 
 import monProductsRouter from './routes/mongooseProduct.router.js'
 import monCartsRouter from './routes/mongooseCart.router.js'
@@ -50,6 +51,7 @@ app.use((req, res, next) => {
 })
 
 app.use('/', viewsRouter)
+app.use('/', indexRouter)
 
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)

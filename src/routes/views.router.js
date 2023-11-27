@@ -4,6 +4,7 @@ import { buildResponsePaginated } from '../utils.js'
 
 // import mongoose from 'mongoose'
 import ProductModel from '../dao/mongo/models/product.js'
+import CartModel from '../dao/mongo/models/cart.js'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -19,7 +20,7 @@ initializeProductManager()
 
 const router = express.Router()
 
-router.get('/products', async (req, res) => {
+router.get('/', async (req, res) => {
   const { limit = 10, page = 1, sort, search } = req.query
   const criteria = {}
   const options = { limit, page }
@@ -41,8 +42,25 @@ router.get('/products', async (req, res) => {
 
   res.render('index', {
     title: 'Productos',
+    style: 'products.css',
     ...data
   })
+})
+
+router.get('/carts/:cid', async (req, res) => {
+  try {
+    const { cid } = req.params
+    const cart = await CartModel.findById({ _id: cid }).lean()
+    const cartItems = cart.items
+    res.render('cart', {
+      title: 'Carritos',
+      style: 'cart.css',
+      cartItems,
+      cart
+    })
+  } catch (err) {
+    console.error(err.message)
+  }
 })
 
 router.post('/products', async (req, res) => {

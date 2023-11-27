@@ -84,6 +84,13 @@ export default class MonCartManager {
     }
   }
 
+  updateListOfProducts = async (cartId, productsArray) => {
+    const cart = await cartModel.findOne({ _id: cartId })
+    if (!cart) { throw new Error(`Cart with id: ${cartId} not found!`) }
+
+    cart.items = productsArray
+  }
+
   removeProduct = async (cartId, productId) => {
     const cart = await cartModel.findOne({ _id: cartId })
 
