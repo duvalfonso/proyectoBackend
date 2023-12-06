@@ -60,11 +60,11 @@ export default class MonCartManager {
     const cart = await cartModel.findOne({ _id: cartId })
     if (!cart) { throw new Error(`Cart with id: ${cartId} not found!`) }
 
-    const productInCart = cart.items.find(item => item.productId.toString() === productId)
+    const productInCart = cart.items.find(item => item.productId._id.toString() === productId)
     if (!productInCart) { throw new Error(`Product with id: ${productId} not found!`) }
 
     if (quantity === 0) {
-      cart.items = cart.items.filter(item => item.productId.toString() !== productId)
+      cart.items = cart.items.filter(item => item.productId._id.toString() !== productId)
     }
 
     if (quantity > 0) {

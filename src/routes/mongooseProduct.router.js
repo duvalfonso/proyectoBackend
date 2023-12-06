@@ -33,7 +33,8 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:pid', async (req, res) => {
-  const product = await productsService.getProductById()
+  const pid = req.params.pid
+  const product = await productsService.getProductById({ _id: pid })
   res.send({ status: 'success', payload: product })
 })
 

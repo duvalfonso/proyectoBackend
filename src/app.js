@@ -1,5 +1,7 @@
 import express from 'express'
+import session from 'express-session'
 import __dirname from './utils.js'
+import MongoStore from 'connect-mongo'
 
 import productsRouter from './routes/products.router.js'
 import cartsRouter from './routes/cart.router.js'
@@ -7,6 +9,7 @@ import handlebars from 'express-handlebars'
 import viewsRouter from './routes/views.router.js'
 import indexRouter from './routes/index.router.js'
 
+import sessionsRouter from './routes/sessions.router.js'
 import monProductsRouter from './routes/mongooseProduct.router.js'
 import monCartsRouter from './routes/mongooseCart.router.js'
 
@@ -28,6 +31,8 @@ initializeProductManager()
 const app = express()
 const PORT = process.env.PORT || 8080
 
+const SESSION_SECRET = 'secret-string'
+
 const server = app.listen(PORT, () => console.log(`Listening on ${PORT}. ${server} `))
 
 const connection = mongoose.connect(
@@ -45,14 +50,24 @@ app.engine('handlebars', handlebars.engine())
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 
+app.use(session({
+  store: new MongoStore({
+    mongoUrl: `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.fueracc.mongodb.net/${process.env.DEFAULT_DATA_BASE}?retryWrites=true&w=majority`,
+    ttl: 3600
+  }),
+  secret: SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true
+}))
+
 app.use((req, res, next) => {
   req.io = io
   next()
 })
 
-app.use('/', viewsRouter)
-app.use('/', indexRouter)
+app.use('/', viewsRouter, indexRouter)
 
+app.use('/api/sessions', sessionsRouter)
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
 

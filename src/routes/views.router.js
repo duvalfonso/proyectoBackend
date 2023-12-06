@@ -96,4 +96,27 @@ router.delete('/products/:id', async (req, res) => {
   }
 })
 
+router.get('/register', (req, res) => {
+  res.render('register', {
+    title: 'Register'
+  })
+})
+
+router.get('/login', (req, res) => {
+  res.render('login', {
+    title: 'Login'
+  })
+})
+
+router.get('/profile', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login')
+  }
+
+  res.render('profile', {
+    user: req.session.user,
+    title: 'My Profile'
+  })
+})
+
 export default router
