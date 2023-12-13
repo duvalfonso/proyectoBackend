@@ -5,6 +5,7 @@ import { buildResponsePaginated } from '../utils.js'
 // import mongoose from 'mongoose'
 import ProductModel from '../dao/mongo/models/product.js'
 import CartModel from '../dao/mongo/models/cart.js'
+import UserModel from '../dao/mongo/models/user.js'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -90,7 +91,6 @@ router.delete('/products/:id', async (req, res) => {
     await productManager.deleteProduct(id)
     req.io.emit('remove-product', id)
     res.json({ message: 'Product succesfully deleted.' })
-    // res.render('index', { id })
   } catch (err) {
     res.status(400).send({ error: err.message })
   }
@@ -108,6 +108,12 @@ router.get('/login', (req, res) => {
   })
 })
 
+router.post('/api/sessions/login', async (req, res) => {
+  const { email, password } = req.body
+  const user = await UserModel.findOne({ email, password })
+  if (!user) { res.render('error', { title: 'Error' }) }
+})
+
 router.get('/profile', (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login')
@@ -117,6 +123,10 @@ router.get('/profile', (req, res) => {
     user: req.session.user,
     title: 'My Profile'
   })
+})
+
+router.get('/recover-password', (req, res) => {
+  res.render('recover-pass', { title: 'Recuperar contraseña' })
 })
 
 export default router

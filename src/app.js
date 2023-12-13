@@ -1,5 +1,7 @@
 import express from 'express'
 import session from 'express-session'
+import passport from 'passport'
+import { initializePassport } from './config/passport.config.js'
 import __dirname from './utils.js'
 import MongoStore from 'connect-mongo'
 
@@ -53,21 +55,25 @@ app.set('view engine', 'handlebars')
 app.use(session({
   store: new MongoStore({
     mongoUrl: `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.fueracc.mongodb.net/${process.env.DEFAULT_DATA_BASE}?retryWrites=true&w=majority`,
-    ttl: 3600
+    ttl: 240
   }),
   secret: SESSION_SECRET,
   resave: false,
   saveUninitialized: true
 }))
 
+initializePassport()
+app.use(passport.initialize())
+app.use(passport.session())
+
 app.use((req, res, next) => {
   req.io = io
   next()
 })
 
+app.use('/api/sessions', sessionsRouter)
 app.use('/', viewsRouter, indexRouter)
 
-app.use('/api/sessions', sessionsRouter)
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
 
