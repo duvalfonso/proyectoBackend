@@ -1,8 +1,8 @@
 import express from 'express'
 import session from 'express-session'
 import passport from 'passport'
-import { initializePassport } from './config/passport.config.js'
 import __dirname from './utils.js'
+import { initializePassport } from './config/passport.config.js'
 import MongoStore from 'connect-mongo'
 
 import productsRouter from './routes/products.router.js'
