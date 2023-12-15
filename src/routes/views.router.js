@@ -115,12 +115,12 @@ router.post('/api/sessions/login', async (req, res) => {
 })
 
 router.get('/profile', (req, res) => {
-  if (!req.session.user) {
+  if (!req.session.passport.user) {
     return res.redirect('/login')
   }
 
   res.render('profile', {
-    user: req.session.user,
+    user: req.session.passport.user,
     title: 'My Profile'
   })
 })
