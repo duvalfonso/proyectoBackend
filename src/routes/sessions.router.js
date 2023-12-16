@@ -45,9 +45,15 @@ router.get('/failregister', async (req, res) => {
 })
 
 router.post('/login', passport.authenticate('login', { failureRedirect: '/login' }), async (req, res) => {
-  console.log(req.session.passport.user)
+  if (!req.user) return res.status(400).send({ status: 'error', message: 'Invalid credentials' })
+  req.session.user = {
+    firstName: req.user.firstName,
+    lastName: req.user.lastName,
+    email: req.user.email,
+    role: req.user.role
+  }
 
-  res.send({ status: 'success', message: 'Login in' })
+  res.send({ status: 'success', payload: req.user })
   // res.redirect('/')
 })
 
@@ -88,8 +94,10 @@ router.get('/profile', (req, res) => {
   if (!req.session.passport.user) {
     return res.status(401).json({ message: 'Not authenticated' })
   }
-
-  res.status(200).json(req.session.passport.user)
+  const userId = UserModel.findById(req.session.passport.user)
+  const completeUser = passport.deserializeUser(userId)
+  console.log(completeUser)
+  res.status(200).json(completeUser)
 })
 
 router.get('/logout', (req, res) => {
