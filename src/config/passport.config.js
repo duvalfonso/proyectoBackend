@@ -1,15 +1,18 @@
 import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
-// import { Strategy as GithubStrategy } from 'passport-github2'
+import { Strategy as GithubStrategy } from 'passport-github2'
 import UserModel from '../dao/mongo/models/user.js'
 
 import { createHash, isValidPassword } from '../utils.js'
+import dotenv from 'dotenv'
+dotenv.config()
 
 export const initializePassport = () => {
   const registerOpts = {
     usernameField: 'email',
     passReqToCallback: true
   }
+
   passport.use(
     'register',
     new LocalStrategy(
@@ -70,6 +73,34 @@ export const initializePassport = () => {
         return done(null, user)
       }
     )
+  )
+
+  const githubOpts = {
+    clientID: `${process.env.GITHUB_CLIENT_ID}`,
+    clientSecret: `${process.env.GITHUB_APP_SECRET}`,
+    callbackUrl: `${process.env.GITHUB_CALLBACK_URL}`
+  }
+
+  passport.use(
+    'github',
+    new GithubStrategy(githubOpts, async (accesstoken, refreshToken, profile, done) => {
+      const email = profile._json.email
+      console.log(profile._json)
+      let user = await UserModel.findOne({ email })
+      if (user) {
+        return done(null, user)
+      }
+      user = {
+        firstName: profile._json.name,
+        lastName: '',
+        email,
+        password: '',
+        provider: 'github',
+        providerId: profile.id
+      }
+      const newUser = await UserModel.create(user)
+      done(null, newUser)
+    })
   )
 
   passport.serializeUser(function (user, done) {

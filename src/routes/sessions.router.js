@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import passport from 'passport'
 import UserModel from '../dao/mongo/models/user.js'
-import { createHash, isValidPassword } from '../utils.js'
+import { createHash } from '../utils.js'
 
 const router = Router()
 
@@ -109,7 +109,10 @@ router.get('/logout', (req, res) => {
   })
 })
 
-router.get('/github')
-router.get('/github/callback')
+router.get('/github', passport.authenticate('github', { scope: ['user:email'] }))
+router.get('/github/callback', passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
+  console.log(req.session)
+  res.redirect('/profile')
+})
 
 export default router

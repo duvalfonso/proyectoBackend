@@ -5,12 +5,13 @@
     <input name="email" required>
 
     <label>Contraseña</label>
-    <input type="password" name="password" required>
+    <input type="password" name="password" >
 
     <a href="/recover-password">Recuperar contraseña</a>
-    <input type="submit">
-    <a href="/register">Registrarse</a>
+    <input type="submit" value="Entrar">
+    <a href="/api/sessions/github" role="button">Entrar con Github</a>
   </form>
+    <a href="/register">Registrarse</a>
 </div>
 
 <script src="/js/login.js" ></script>
