@@ -111,7 +111,7 @@ router.get('/logout', (req, res) => {
 
 router.get('/github', passport.authenticate('github', { scope: ['user:email'] }))
 router.get('/github/callback', passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
-  console.log(req.session)
+  req.session.user = req.session.passport.user
   res.redirect('/profile')
 })
 

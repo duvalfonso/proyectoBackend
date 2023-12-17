@@ -85,7 +85,6 @@ export const initializePassport = () => {
     'github',
     new GithubStrategy(githubOpts, async (accesstoken, refreshToken, profile, done) => {
       const email = profile._json.email
-      console.log(profile._json)
       let user = await UserModel.findOne({ email })
       if (user) {
         return done(null, user)
