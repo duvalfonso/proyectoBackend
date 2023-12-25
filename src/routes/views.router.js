@@ -1,11 +1,12 @@
 import express from 'express'
+import passport from 'passport'
 import ProductManager from '../dao/fileSystem/managers/productManager.js'
 import { buildResponsePaginated } from '../utils.js'
 
 // import mongoose from 'mongoose'
+import UserModel from '../dao/mongo/models/user.js'
 import ProductModel from '../dao/mongo/models/product.js'
 import CartModel from '../dao/mongo/models/cart.js'
-import UserModel from '../dao/mongo/models/user.js'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -108,21 +109,38 @@ router.get('/login', (req, res) => {
   })
 })
 
-router.post('/api/sessions/login', async (req, res) => {
-  const { email, password } = req.body
-  const user = await UserModel.findOne({ email, password })
-  if (!user) { res.render('error', { title: 'Error' }) }
-})
+// router.post('/api/sessions/login', async (req, res) => {
+//   const { email, password } = req.body
+//   const user = await UserModel.findOne({ email, password })
+//   if (!user) { res.render('error', { title: 'Error' }) }
+// })
 
-router.get('/profile', (req, res) => {
-  if (!req.session.user) {
-    return res.redirect('/login')
+// Router GET with Sessions
+// router.get('/profile', (req, res) => {
+//   console.log(req.user)
+//   if (!req.cookies.authToken) {
+//     return res.redirect('/login')
+//   }
+//   const user = req.user.toJSON()
+//   res.render('profile', {
+//     user,
+//     name: `${user.firstName} ${user.lastName}`,
+//     title: 'My Profile'
+//   })
+// })
+
+router.get('/profile', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  if (!req.cookies.authToken) {
+    return res.status(401).json({ message: 'Not authenticated' })
   }
-  const user = req.user.toJSON()
+
+  const loggedIn = req.cookies.authToken
+  const user = await UserModel.findById(req.user.id).lean()
   res.render('profile', {
     user,
     name: `${user.firstName} ${user.lastName}`,
-    title: 'My Profile'
+    title: 'My Profile',
+    loggedIn
   })
 })
 

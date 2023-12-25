@@ -31,3 +31,11 @@ export const buildResponsePaginated = (data, baseUrl) => {
 export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10))
 
 export const isValidPassword = (password, user) => bcrypt.compareSync(password, user.password)
+
+export const cookieExtractor = (req) => {
+  let token = null
+  if (req && req.cookies) {
+    token = req.cookies.authToken
+  }
+  return token
+}

@@ -1,9 +1,10 @@
 import passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 import { Strategy as GithubStrategy } from 'passport-github2'
+import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt'
 import UserModel from '../dao/mongo/models/user.js'
 
-import { createHash, isValidPassword } from '../utils.js'
+import { cookieExtractor, createHash, isValidPassword } from '../utils.js'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -102,12 +103,23 @@ export const initializePassport = () => {
     })
   )
 
-  passport.serializeUser(function (user, done) {
-    return done(null, user.id)
-  })
+  passport.use('jwt', new JWTStrategy({
+    jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+    secretOrKey: 'jwtSecret'
+  }, async (payload, done) => {
+    try {
+      return done(null, payload)
+    } catch (error) {
+      return done(error)
+    }
+  }))
 
-  passport.deserializeUser(async function (id, done) {
-    const user = await UserModel.findOne({ _id: id })
-    return done(null, user)
-  })
+  // passport.serializeUser(function (user, done) {
+  //   return done(null, user.id)
+  // })
+
+  // passport.deserializeUser(async function (id, done) {
+  //   const user = await UserModel.findOne({ _id: id })
+  //   return done(null, user)
+  // })
 }

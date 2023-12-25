@@ -1,17 +1,20 @@
 import express from 'express'
-import session from 'express-session'
+// import session from 'express-session'
 import passport from 'passport'
 import __dirname from './utils.js'
+import cookieParser from 'cookie-parser'
 import { initializePassport } from './config/passport.config.js'
-import MongoStore from 'connect-mongo'
+// import MongoStore from 'connect-mongo'
 
 import productsRouter from './routes/products.router.js'
 import cartsRouter from './routes/cart.router.js'
 import handlebars from 'express-handlebars'
 import viewsRouter from './routes/views.router.js'
 import indexRouter from './routes/index.router.js'
+// import authRouter from './routes/auth.router.js'
 
-import sessionsRouter from './routes/sessions.router.js'
+import SessionsRouter from './routes/Sessions.router.js'
+import usersRouter from './routes/users.router.js'
 import monProductsRouter from './routes/mongooseProduct.router.js'
 import monCartsRouter from './routes/mongooseCart.router.js'
 
@@ -33,7 +36,7 @@ initializeProductManager()
 const app = express()
 const PORT = process.env.PORT || 8080
 
-const SESSION_SECRET = 'secret-string'
+// const SESSION_SECRET = 'secret-string'
 
 const server = app.listen(PORT, () => console.log(`Listening on ${PORT}. ${server} `))
 
@@ -44,37 +47,41 @@ console.log(connection)
 
 const io = new Server(server)
 
+app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(`${__dirname}/public`))
+initializePassport()
 
 app.engine('handlebars', handlebars.engine())
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 
-app.use(session({
-  store: new MongoStore({
-    mongoUrl: `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.fueracc.mongodb.net/${process.env.DEFAULT_DATA_BASE}?retryWrites=true&w=majority`,
-    ttl: 240
-  }),
-  secret: SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false
-}))
+// app.use(session({
+//   store: new MongoStore({
+//     mongoUrl: `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.fueracc.mongodb.net/${process.env.DEFAULT_DATA_BASE}?retryWrites=true&w=majority`,
+//     ttl: 240
+//   }),
+//   secret: SESSION_SECRET,
+//   resave: false,
+//   saveUninitialized: false
+// }))
 
-initializePassport()
 app.use(passport.initialize())
-app.use(passport.session())
+// app.use(passport.session())
+
+const sessionsRouter = new SessionsRouter()
 
 app.use((req, res, next) => {
   req.io = io
   next()
 })
 
-app.use('/api/sessions', sessionsRouter)
+app.use('/api/sessions', sessionsRouter.getRouter())
 app.use('/', viewsRouter, indexRouter)
 
 app.use('/api/products', productsRouter)
+app.use('/api/users', usersRouter)
 app.use('/api/carts', cartsRouter)
 
 app.use('/api/monproducts', monProductsRouter)
