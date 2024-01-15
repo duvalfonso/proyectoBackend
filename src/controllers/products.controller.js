@@ -1,44 +1,18 @@
-import { Router } from 'express'
-import MonProductManager from '../dao/mongo/managers/products.js'
+import { productsService } from '../services/repositories.js'
 import uploader from '../services/uploader.js'
-import { buildResponsePaginated } from '../utils.js'
 
-import ProductModel from '../dao/mongo/models/product.js'
+const getProducts = async (req, res) => {
+  const products = await productsService.getProducts()
+  res.send({ status: 'success', payload: products })
+}
 
-const router = Router()
-const productsService = new MonProductManager()
-
-router.get('/', async (req, res) => {
-  const { limit = 10, page = 1, sort, search } = req.query
-  const criteria = {}
-  const options = { limit, page }
-  if (sort) {
-    options.sort = sort
-      ? sort === 'asc'
-        ? { price: 1 }
-        : sort === 'desc'
-          ? { price: -1 }
-          : null
-      : null
-  }
-  if (search) {
-    criteria.category = search
-  }
-  const products = await ProductModel.paginate(criteria, options)
-  const urlBase = 'http://localhost:8080/api/monproducts'
-  const data = buildResponsePaginated({ ...products }, urlBase)
-  res.send({
-    data
-  })
-})
-
-router.get('/:pid', async (req, res) => {
-  const pid = req.params.pid
-  const product = await productsService.getProductById({ _id: pid })
+const getProductById = async (req, res) => {
+  const { pid } = req.params
+  const product = await productsService.getProductBy({ _id: pid })
   res.send({ status: 'success', payload: product })
-})
+}
 
-router.post('/', uploader.array('thumbnail'), async (req, res) => {
+const createProduct = (uploader.array('thumbnail'), async (req, res) => {
   const { title, category, description, price, code, stock, status } = req.body
   if (!title || !category || !description || !price || !code || !stock) {
     return res
@@ -68,8 +42,8 @@ router.post('/', uploader.array('thumbnail'), async (req, res) => {
   res.send({ status: 'success', payload: result._id })
 })
 
-router.put('/:pid', async (req, res) => {
-  const pid = req.params.pid
+const updateProduct = async (req, res) => {
+  const { pid } = req.params
   const { title, category, description, price, code, stock, status } = req.body
 
   const updatedProduct = {
@@ -82,7 +56,7 @@ router.put('/:pid', async (req, res) => {
     status
   }
 
-  const product = await productsService.getProductById({ _id: pid })
+  const product = await productsService.getProductBy({ _id: pid })
   if (!product) {
     return res
       .status(400)
@@ -90,13 +64,19 @@ router.put('/:pid', async (req, res) => {
   }
   await productsService.updateProduct(pid, updatedProduct)
   res.send({ status: 'success', message: 'Product updated' })
-})
+}
 
-router.delete('/:pid', async (req, res) => {
-  const pid = req.params.pid
+const deleteProduct = async (req, res) => {
+  const { pid } = req.params
   const result = await productsService.deleteProduct(pid)
   console.log(result)
   res.send({ status: 'success', message: 'Product deleted' })
-})
+}
 
-export default router
+export default {
+  getProducts,
+  getProductById,
+  createProduct,
+  updateProduct,
+  deleteProduct
+}

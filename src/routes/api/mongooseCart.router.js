@@ -1,12 +1,13 @@
 import { Router } from 'express'
-import MonCartManager from '../dao/mongo/managers/carts.js'
-import CartModel from '../dao/mongo/models/cart.js'
+import DaoCartsManager from '../../dao/mongo/managers/carts.js'
+import CartController from '../../controllers/carts.controller.js'
+import CartModel from '../../dao/mongo/models/cart.js'
 
 const router = Router()
-const cartsService = new MonCartManager()
+const cartsService = new DaoCartsManager()
 
 router.get('/', async (req, res) => {
-  const carts = await CartModel.find()
+  const carts = await CartController.getCarts()
   res.send({ status: 'success', payload: carts })
 })
 

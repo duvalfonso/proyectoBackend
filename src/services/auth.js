@@ -31,5 +31,5 @@ export const passportCall = (strategy, options = {}) => {
 }
 
 export const generateToken = (user) => {
-  return jwt.sign(user, 'jwtSecret', { expiresIn: '1d' })
+  return jwt.sign(user, 'jwtSecret', { expiresIn: '1h' })
 }

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { passportCall } from '../services/auth.js'
+import { passportCall } from '../../services/auth.js'
 
 export default class BaseRouter {
   constructor () {

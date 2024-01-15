@@ -2,8 +2,9 @@
   <h1>Saludos!, {{name}}</h1>
   <p>Correo: {{user.email}}</p>
   <strong>Rol: {{user.role}} </strong>
-  <h2>Ir a 
-  <a href="/">productos</a>
+  <a href="/carts/{{user.cart}}">Mi carrito</a>
+  <h2>Ir a
+    <a href="/">productos</a>
   </h2>
   <a href="/api/sessions/logout" role="button">Cerrar sesión</a>
 </div>

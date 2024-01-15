@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import passport from 'passport'
-import UserModel from '../dao/mongo/models/user.js'
+import UserModel from '../../dao/mongo/models/user.js'
 
 const router = Router()
 

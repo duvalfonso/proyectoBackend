@@ -1,4 +1,4 @@
-import { generateToken, passportCall } from '../services/auth.js'
+import { generateToken, passportCall } from '../../services/auth.js'
 import BaseRouter from './Router.js'
 
 export default class SessionsRouter extends BaseRouter {
@@ -9,7 +9,7 @@ export default class SessionsRouter extends BaseRouter {
     this.post('/login', ['NO_AUTH'], passportCall('login', { strategyType: 'locals' }), (req, res) => {
       const token = generateToken(req.user)
       res.cookie('authToken', token, {
-        maxAge: 1000 * 3600 * 24,
+        maxAge: 1000 * 60 * 30,
         httpOnly: true
       }).sendSuccess('Logged in')
     })

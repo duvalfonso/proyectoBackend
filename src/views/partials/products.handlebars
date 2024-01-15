@@ -8,27 +8,26 @@
 			<h3>{{this.title}}</h3>
 			<p>{{this.description}}</p>
 			<button data-modal-target="{{this._id}}" class="more-btn">Mostrar más</button>
-			<div 
-				id="{{this._id}}"	class="modal-container">
+			<div id="{{this._id}}" class="modal-container">
 				<div class="menu-content">
 					<span class="price">{{this.price}} </span>
-					<button data-close-button class="close-button" >&times;</button>
+					<button data-close-button class="close-button">&times;</button>
 					<img src="{{this.thumbnail}}" alt="{{this.title}}">
 					<h3>{{this.title}}</h3>
 					<h4>{{this.category}}</h4>
 					<p>{{this.description}}</p>
 					<b>SKU: {{this.code}}</b>
 					<p>Stock: {{this.stock}}</p>
-				<button>Agregar al carrito</button>
+					<button data-product-id="{{this._id}}" class="add-to-cart">Agregar al carrito</button>
 				</div>
 			</div>
-			<button >Agregar al carrito</button>
+			<button data-product-id="{{this._id}}" class="add-to-cart">Agregar al carrito</button>
 		</div>
 		{{/each}}
 	</div>
 	<div class="paginator">
-	<a href="{{prevLink}}" role="button" {{#unless hasPrevPage}}disabled{{/unless}}>Anterior</a>
+		<a href="{{prevLink}}" role="button" {{#unless hasPrevPage}}disabled{{/unless}}>Anterior</a>
 		<p>Página actual: {{page}}</p>
-	<a href="{{nextLink}}" role="button" {{#unless hasNextPage}}disabled{{/unless}}>Siguiente</a>
+		<a href="{{nextLink}}" role="button" {{#unless hasNextPage}}disabled{{/unless}}>Siguiente</a>
 	</div>
 </section>

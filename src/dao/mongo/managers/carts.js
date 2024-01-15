@@ -1,8 +1,8 @@
 import cartModel from '../models/cart.js'
-import MonProductManager from './products.js'
-const productsService = new MonProductManager()
+import DaoProductsManager from './products.js'
+const productsService = new DaoProductsManager()
 
-export default class MonCartManager {
+export default class DaoCartsManager {
   getCarts = async () => {
     return await cartModel.find().lean()
   }
