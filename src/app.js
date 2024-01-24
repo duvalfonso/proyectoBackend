@@ -9,7 +9,7 @@ import { initializePassport } from './config/passport.config.js'
 import productsRouter from './routes/api/products.router.js'
 import cartsRouter from './routes/api/cart.router.js'
 import handlebars from 'express-handlebars'
-import viewsRouter from './routes/views.router.js'
+import viewsRouter from './routes/views/views.router.js'
 import indexRouter from './routes/api/index.router.js'
 // import authRouter from './routes/auth.router.js'
 

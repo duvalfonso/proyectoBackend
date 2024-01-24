@@ -15,11 +15,15 @@
     <li>
       <a href="/">Inicio</a>
     </li>
+    {{#if loggedIn}}
     <li>
       <a href="/profile">Mi perfil</a>
     </li>
+    {{/if}}
+    {{#unless loggedIn}}
     <li>
       <a href="/login">Iniciar sesión</a>
     </li>
+    {{/unless}}
   </ul>
 </nav>

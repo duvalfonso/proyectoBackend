@@ -1,12 +1,12 @@
 import express from 'express'
 import passport from 'passport'
-import ProductManager from '../dao/fileSystem/managers/productManager.js'
-import { buildResponsePaginated } from '../utils.js'
+import ProductManager from '../../dao/fileSystem/managers/productManager.js'
+import { buildResponsePaginated } from '../../utils.js'
 
 // import mongoose from 'mongoose'
-import UserModel from '../dao/mongo/models/user.js'
-import ProductModel from '../dao/mongo/models/product.js'
-import CartModel from '../dao/mongo/models/cart.js'
+import UserModel from '../../dao/mongo/models/user.js'
+import ProductModel from '../../dao/mongo/models/product.js'
+import CartModel from '../../dao/mongo/models/cart.js'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -22,7 +22,7 @@ initializeProductManager()
 
 const router = express.Router()
 
-router.get('/', async (req, res) => {
+router.get('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
   const { limit = 10, page = 1, sort, search } = req.query
   const criteria = {}
   const options = { limit, page }
@@ -41,11 +41,16 @@ router.get('/', async (req, res) => {
   const result = await ProductModel.paginate(criteria, options)
   const urlBase = 'http://localhost:8080/'
   const data = buildResponsePaginated({ ...result, sort, search }, urlBase)
+  const loggedIn = req.cookies.authToken
+  const user = await UserModel.findById(req.user.id).lean()
+  console.log(user.cart)
 
   res.render('index', {
     title: 'Productos',
     style: 'products.css',
-    ...data
+    ...data,
+    loggedIn,
+    cart: user.cart
   })
 })
 
@@ -54,11 +59,13 @@ router.get('/carts/:cid', async (req, res) => {
     const { cid } = req.params
     const cart = await CartModel.findById({ _id: cid }).lean()
     const cartItems = cart.items
+    const loggedIn = req.cookies.authToken
     res.render('cart', {
       title: 'Carritos',
       style: 'cart.css',
       cartItems,
-      cart
+      cart,
+      loggedIn
     })
   } catch (err) {
     console.error(err.message)
@@ -104,8 +111,10 @@ router.get('/register', (req, res) => {
 })
 
 router.get('/login', (req, res) => {
+  const loggedIn = req.cookies.authToken
   res.render('login', {
-    title: 'Login'
+    title: 'Login',
+    loggedIn
   })
 })
 

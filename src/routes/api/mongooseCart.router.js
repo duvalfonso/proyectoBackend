@@ -1,63 +1,35 @@
 import { Router } from 'express'
 import DaoCartsManager from '../../dao/mongo/managers/carts.js'
-import CartController from '../../controllers/carts.controller.js'
-import CartModel from '../../dao/mongo/models/cart.js'
+import cartsController from '../../controllers/carts.controller.js'
 
 const router = Router()
 const cartsService = new DaoCartsManager()
 
-router.get('/', async (req, res) => {
-  const carts = await CartController.getCarts()
-  res.send({ status: 'success', payload: carts })
-})
+router.get('/', cartsController.getCarts)
 
-router.post('/', async (req, res) => {
-  const newCart = await cartsService.createCart()
-  res.send({ status: 'success', payload: newCart._id })
-})
+router.post('/', cartsController.createCart)
 
-router.get('/:cid', async (req, res) => {
-  const cid = req.params.cid
-  const cart = await CartModel.findOne({ _id: cid })
-  if (!cart) {
-    return res.status(400).send({ status: 'error', error: `Cart with id: ${cid} not found!` })
-  }
-  res.send({ status: 'success', payload: cart })
-})
+router.get('/:cid', cartsController.getCartById)
 
-router.post('/:cid/product/:pid', async (req, res) => {
-  try {
-    const { pid, cid } = req.params
-    const quantity = Number(req.body.quantity)
+router.post('/:cid/product/:pid', cartsController.addProduct)
 
-    const result = await cartsService.addProduct(cid, pid, quantity)
+router.put('/:cid/product/:pid', cartsController.updateQuantity)
 
-    res.status(200).json({
-      status: 'success',
-      msg: 'Process successful',
-      cartData: result
-    })
-  } catch (err) {
-    console.error(err)
-    res.status(400).json({ error: err.message })
-  }
-})
-
-router.put('/:cid/product/:pid', async (req, res) => {
-  const { cid, pid } = req.params
-  const quantity = Number(req.body.quantity)
-  try {
-    const updatedQuantity = await cartsService.updateQuantity(cid, pid, quantity)
-    res.json({
-      status: 'success',
-      message: 'Quantity updated',
-      cartData: updatedQuantity
-    })
-  } catch (err) {
-    console.error(err)
-    res.status(400).json({ error: err.message })
-  }
-})
+// router.put('/:cid/product/:pid', async (req, res) => {
+//   const { cid, pid } = req.params
+//   const quantity = Number(req.body.quantity)
+//   try {
+//     const updatedQuantity = await cartsService.updateQuantity(cid, pid, quantity)
+//     res.json({
+//       status: 'success',
+//       message: 'Quantity updated',
+//       cartData: updatedQuantity
+//     })
+//   } catch (err) {
+//     console.error(err)
+//     res.status(400).json({ error: err.message })
+//   }
+// })
 
 router.delete('/:cid/product/:pid', async (req, res) => {
   try {

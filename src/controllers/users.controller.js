@@ -2,12 +2,14 @@ import { usersService } from '../services/repositories.js'
 
 const getUsers = async (req, res) => {
   const users = await usersService.getUsers()
+  if (!users) return res.status(500).send({ status: 'error', error: 'Ha ocurrido un error' })
   res.send({ status: 'success', payload: users })
 }
 
 const getUserById = async (req, res) => {
   const { uid } = req.params
   const result = await usersService.getUserBy({ _id: uid })
+  if (!result) return res.status(500).send({ status: 'error', error: 'Ha ocurrido un error' })
   res.send({ status: 'success', payload: result })
 }
 

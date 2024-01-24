@@ -8,7 +8,11 @@ export default class UserRepository {
   }
 
   getUserBy = (params) => {
-    return this.dao.getUserBy(params)
+    return this.dao.getUserById(params)
+  }
+
+  getUserByEmail = (email) => {
+    return this.dao.getUserByEmail(email)
   }
 
   createUser = (user) => {

@@ -1,8 +1,12 @@
 import { cartsService } from '../services/repositories.js'
 
 const getCarts = async (req, res) => {
-  const carts = await cartsService.getCarts()
-  res.send({ status: 'success', payload: carts })
+  try {
+    const carts = await cartsService.getCarts()
+    res.send({ status: 'success', payload: carts })
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 const createCart = async (req, res) => {
@@ -12,10 +16,9 @@ const createCart = async (req, res) => {
 
 const getCartById = async (req, res) => {
   try {
-    const { pid, cid } = req.params
-    const quantity = Number(req.body.quantity)
+    const { cid } = req.params
 
-    const result = await cartsService.addProduct(cid, pid, quantity)
+    const result = await cartsService.getCartById(cid)
 
     res.status(200).json({
       status: 'success',
@@ -28,9 +31,25 @@ const getCartById = async (req, res) => {
   }
 }
 
+const addProduct = async (req, res) => {
+  try {
+    const { pid, cid } = req.params
+    const { quantity } = req.body
+
+    const result = await cartsService.addProduct(cid, pid, quantity)
+    res.status(200).json({
+      status: 'success',
+      msg: 'Proccess successful',
+      cartData: result
+    })
+  } catch (err) {
+    console.error(err)
+  }
+}
+
 const updateQuantity = async (req, res) => {
   const { cid, pid } = req.params
-  const quantity = Number(req.body.quantity)
+  const quantity = req.body.quantity
   try {
     const updatedQuantity = await cartsService.updateQuantity(cid, pid, quantity)
     res.json({
@@ -77,6 +96,7 @@ export default {
   getCarts,
   createCart,
   getCartById,
+  addProduct,
   updateQuantity,
   removeProduct,
   clearCart

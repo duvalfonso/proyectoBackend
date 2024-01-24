@@ -9,7 +9,7 @@ export default class SessionsRouter extends BaseRouter {
     this.post('/login', ['NO_AUTH'], passportCall('login', { strategyType: 'locals' }), (req, res) => {
       const token = generateToken(req.user)
       res.cookie('authToken', token, {
-        maxAge: 1000 * 60 * 30,
+        maxAge: 1000 * 60,
         httpOnly: true
       }).sendSuccess('Logged in')
     })

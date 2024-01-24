@@ -27,9 +27,7 @@ router.get('/', async (req, res) => {
   const products = await ProductModel.paginate(criteria, options)
   const urlBase = 'http://localhost:8080/api/monproducts'
   const data = buildResponsePaginated({ ...products }, urlBase)
-  res.send({
-    data
-  })
+  res.status(200).send({ data })
 })
 
 router.get('/:pid', async (req, res) => {

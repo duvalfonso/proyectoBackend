@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import passport from 'passport'
 import UserModel from '../../dao/mongo/models/user.js'
+import usersController from '../../controllers/users.controller.js'
 
 const router = Router()
 
@@ -9,5 +10,7 @@ router.get('/profile/carts', passport.authenticate('jwt', { session: false }), a
   res.send({ status: 'success', payload: user })
 }
 )
+
+router.get('/:uid', usersController.getUserById)
 
 export default router
