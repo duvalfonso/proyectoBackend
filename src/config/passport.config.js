@@ -69,7 +69,8 @@ export const initializePassport = () => {
           id: user._id,
           name: `${user.firstName} ${user.lastName}`,
           email: user.email,
-          role: user.role
+          role: user.role,
+          cart: user.cart
         }
         return done(null, user)
       }

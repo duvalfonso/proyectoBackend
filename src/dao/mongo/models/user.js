@@ -10,7 +10,8 @@ const schema = new mongoose.Schema({
   cart: { type: mongoose.SchemaTypes.ObjectId, ref: 'Carts' },
   role: { type: String, enum: ['test', 'user', 'admin', 'superadmin'], default: 'user' },
   status: { type: String, default: 'active' },
-  age: { type: Number }
+  age: { type: Number },
+  orders: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Tickets' }]
 })
 
 const userModel = mongoose.model(collection, schema)

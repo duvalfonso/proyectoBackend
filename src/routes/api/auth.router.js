@@ -5,35 +5,6 @@ import { createHash } from '../../services/auth.js'
 
 const router = Router()
 
-// router.post('/register', async (req, res) => {
-//   const {
-//     body: {
-//       firstName,
-//       lastName,
-//       email,
-//       password,
-//       age
-//     }
-//   } = req
-//   if (
-//     !firstName ||
-//     !lastName ||
-//     !email ||
-//     !password
-//   ) {
-//     res.status(400).json({ message: 'Completa los campos requeridos' })
-//   }
-
-//   const user = await UserModel.create({
-//     firstName,
-//     lastName,
-//     email,
-//     password: createHash(password),
-//     age
-//   })
-//   res.json({ status: 'success', payload: user })
-// })
-
 router.post('/register', passport.authenticate('register', { failureRedirect: '/failregister' }), async (req, res) => {
   req.session.user = req.user
   res.send({ status: 'success', message: 'User registered' })
@@ -50,31 +21,13 @@ router.post('/login', passport.authenticate('login', { failureRedirect: '/login'
     firstName: req.user.firstName,
     lastName: req.user.lastName,
     email: req.user.email,
-    role: req.user.role
+    role: req.user.role,
+    cart: req.user.cart
   }
 
   res.send({ status: 'success', payload: req.user })
   // res.redirect('/')
 })
-
-// router.post('/login', async (req, res) => {
-//   const { email, password } = req.body
-//   const user = await UserModel.findOne({ email })
-//   if (!user) return res.status(400).send({ status: 'error', error: 'Correo o contraseña inválidos' })
-
-//   const isNotValidPassword = !isValidPassword(password, user)
-//   if (isNotValidPassword) {
-//     return res.status(401).json({ message: 'Correo o contraseña inválidos' })
-//   }
-
-//   req.session.user = {
-//     name: `${user.firstName} ${user.lastName}`,
-//     email: user.email,
-//     role: user.role
-//   }
-
-//   res.status(200).json({ status: 'success', message: 'Loging in' })
-// })
 
 router.post('/recover-password', async (req, res) => {
   const { email, password } = req.body

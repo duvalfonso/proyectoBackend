@@ -11,12 +11,13 @@ import cartsRouter from './routes/api/cart.router.js'
 import handlebars from 'express-handlebars'
 import viewsRouter from './routes/views/views.router.js'
 import indexRouter from './routes/api/index.router.js'
-// import authRouter from './routes/auth.router.js'
+// import authRouter from './routes/api/auth.router.js'
 
 import SessionsRouter from './routes/api/Sessions.router.js'
 import usersRouter from './routes/api/users.router.js'
 import monProductsRouter from './routes/api/mongooseProduct.router.js'
 import monCartsRouter from './routes/api/mongooseCart.router.js'
+import ticketsRouter from './routes/api/tickets.router.js'
 
 import { Server } from 'socket.io'
 import ProductManager from './dao/fileSystem/managers/productManager.js'
@@ -78,6 +79,7 @@ app.use((req, res, next) => {
 })
 
 app.use('/api/sessions', sessionsRouter.getRouter())
+// app.use('/api/sessions', authRouter)
 app.use('/', viewsRouter, indexRouter)
 
 app.use('/api/products', productsRouter)
@@ -86,6 +88,7 @@ app.use('/api/carts', cartsRouter)
 
 app.use('/api/monproducts', monProductsRouter)
 app.use('/api/moncarts', monCartsRouter)
+app.use('/api/tickets', ticketsRouter)
 
 io.on('connection', socket => {
   console.log('New client connected')

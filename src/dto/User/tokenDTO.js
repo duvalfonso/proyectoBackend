@@ -3,7 +3,8 @@ export default class UserTokenDTO {
     return {
       name: user.name,
       id: user._id,
-      role: user.role
+      role: user.role,
+      cart: user.cart
     }
   }
 }

@@ -4,7 +4,8 @@ export default class UserInsertDTO {
       name: `${user.firstName} ${user.lastName}`,
       email: user.email,
       role: user.role,
-      password: user.password
+      password: user.password,
+      cart: user.cart
     }
   }
 }

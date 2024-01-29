@@ -7,8 +7,12 @@ export default class ProductRepository {
     return this.dao.getProducts()
   }
 
-  getProductBy = (params) => {
-    return this.dao.getProductBy(params)
+  getProductById = (params) => {
+    return this.dao.getProductById(params)
+  }
+
+  getProductStock = (id) => {
+    return this.dao.getProductStock(id)
   }
 
   createProduct = (product) => {
@@ -17,6 +21,10 @@ export default class ProductRepository {
 
   updateProduct = (id, product) => {
     return this.dao.updateProduct(id, product)
+  }
+
+  updateProductStock = (id, newStock) => {
+    return this.dao.updateProductStock(id, newStock)
   }
 
   deleteProduct = (id) => {

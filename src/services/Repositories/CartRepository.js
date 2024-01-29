@@ -7,8 +7,8 @@ export default class CartRepository {
     return this.dao.getCarts(params)
   }
 
-  getCartById = (params) => {
-    return this.dao.getCartById(params)
+  getCartById = (id) => {
+    return this.dao.getCartById(id)
   }
 
   createCart = () => {
