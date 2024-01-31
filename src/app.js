@@ -12,6 +12,7 @@ import handlebars from 'express-handlebars'
 import viewsRouter from './routes/views/views.router.js'
 import indexRouter from './routes/api/index.router.js'
 // import authRouter from './routes/api/auth.router.js'
+import mockRouter from './routes/api/mock.router.js'
 
 import SessionsRouter from './routes/api/Sessions.router.js'
 import usersRouter from './routes/api/users.router.js'
@@ -81,6 +82,7 @@ app.use((req, res, next) => {
 app.use('/api/sessions', sessionsRouter.getRouter())
 // app.use('/api/sessions', authRouter)
 app.use('/', viewsRouter, indexRouter)
+app.use('/', mockRouter)
 
 app.use('/api/products', productsRouter)
 app.use('/api/users', usersRouter)
