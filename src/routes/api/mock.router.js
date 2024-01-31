@@ -17,9 +17,9 @@ function generateMockProducts () {
   const mockProducts = []
   for (let i = 1; i <= 100; i++) {
     mockProducts.push({
-      title: `Mock Product ${i}`,
+      title: `Mock Product ${i + 100}`,
       category: 'Category ONE',
-      description: `Description for Mock Product ${i}`,
+      description: `Description for Mock Product ${i + 100}`,
       price: Math.floor(Math.random() * 100) + 1,
       thumbnail: [],
       code: `mock_product_${i}`,
