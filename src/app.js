@@ -14,6 +14,7 @@ import indexRouter from './routes/api/index.router.js'
 // import authRouter from './routes/api/auth.router.js'
 import mockRouter from './routes/api/mock.router.js'
 import attachLogger from './middlewares/logger.js'
+import loggerTest from './routes/api/loggertest.router.js'
 
 import SessionsRouter from './routes/api/Sessions.router.js'
 import usersRouter from './routes/api/users.router.js'
@@ -85,6 +86,7 @@ app.use('/api/sessions', sessionsRouter.getRouter())
 // app.use('/api/sessions', authRouter)
 app.use('/', viewsRouter, indexRouter)
 app.use('/', mockRouter)
+app.use('/loggerTest', loggerTest)
 
 app.use('/api/products', productsRouter)
 app.use('/api/users', usersRouter)
