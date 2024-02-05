@@ -13,6 +13,7 @@ import viewsRouter from './routes/views/views.router.js'
 import indexRouter from './routes/api/index.router.js'
 // import authRouter from './routes/api/auth.router.js'
 import mockRouter from './routes/api/mock.router.js'
+import attachLogger from './middlewares/logger.js'
 
 import SessionsRouter from './routes/api/Sessions.router.js'
 import usersRouter from './routes/api/users.router.js'
@@ -49,6 +50,7 @@ console.log(connection)
 
 const io = new Server(server)
 
+app.use(attachLogger)
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))

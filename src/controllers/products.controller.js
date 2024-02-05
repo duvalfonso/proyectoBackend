@@ -69,7 +69,7 @@ const updateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   const { pid } = req.params
   const result = await productsService.deleteProduct(pid)
-  console.log(result)
+  req.logger.info(result)
   res.send({ status: 'success', message: 'Product deleted' })
 }
 

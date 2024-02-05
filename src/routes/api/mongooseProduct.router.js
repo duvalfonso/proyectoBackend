@@ -31,9 +31,14 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:pid', async (req, res) => {
-  const pid = req.params.pid
-  const product = await productsService.getProductById({ _id: pid })
-  res.send({ status: 'success', payload: product })
+  try {
+    const pid = req.params.pid
+    const product = await productsService.getProductById({ _id: pid })
+    res.send({ status: 'success', payload: product })
+  } catch (err) {
+    req.logger.error({ error: err.message })
+    res.status(400).send({ status: 'error', error: err.message })
+  }
 })
 
 router.post('/', uploader.array('thumbnail'), async (req, res) => {

@@ -32,7 +32,7 @@ const createUser = async (req, res) => {
     const result = await usersService.createUser(newUser)
     res.send({ status: 'success', payload: result })
   } catch (err) {
-    console.error({ error: err.message })
+    req.logger.error({ error: err.message })
   }
 }
 
@@ -42,7 +42,7 @@ const updateUser = async (req, res) => {
     const result = await usersService.updateUser({ _id: uid }, data)
     res.send({ status: 'success', payload: result })
   } catch (err) {
-    console.error({ error: err.message })
+    req.logger.error({ error: err.message })
     res.status(400).json({ error: 'Ha ocurrido un error', err })
   }
 }

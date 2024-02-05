@@ -5,7 +5,7 @@ const getCarts = async (req, res) => {
     const carts = await cartsService.getCarts()
     res.send({ status: 'success', payload: carts })
   } catch (err) {
-    console.error(err)
+    req.logger.error(err)
   }
 }
 
@@ -26,7 +26,7 @@ const getCartById = async (req, res) => {
       cartData: result
     })
   } catch (err) {
-    console.error(err)
+    req.logger.error(err)
     res.status(400).json({ error: err.message })
   }
 }
@@ -43,7 +43,7 @@ const addProduct = async (req, res) => {
       cartData: result
     })
   } catch (err) {
-    console.error(err)
+    req.logger.error(err)
   }
 }
 
@@ -58,7 +58,7 @@ const updateQuantity = async (req, res) => {
       cartData: updatedQuantity
     })
   } catch (err) {
-    console.error(err)
+    req.logger.error(err)
     res.status(400).json({ error: err.message })
   }
 }
@@ -73,7 +73,7 @@ const removeProduct = async (req, res) => {
       cartData: result
     })
   } catch (err) {
-    console.error(err)
+    req.logger.error(err)
     res.status(400).json({ error: err.message })
   }
 }
@@ -88,7 +88,7 @@ const clearCart = async (req, res) => {
       payload: result
     })
   } catch (err) {
-    console.error(err)
+    req.logger.error(err)
   }
 }
 

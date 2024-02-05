@@ -41,7 +41,7 @@ router.delete('/:cid/product/:pid', async (req, res) => {
       cartData: result
     })
   } catch (err) {
-    console.error(err)
+    req.logger.error(err)
     res.status(400).json({ error: err.message })
   }
 })
@@ -56,7 +56,7 @@ router.delete('/:cid', async (req, res) => {
       payload: result
     })
   } catch (err) {
-    console.error(err)
+    req.logger.error(err)
   }
 })
 

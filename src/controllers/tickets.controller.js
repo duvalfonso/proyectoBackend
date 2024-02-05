@@ -72,7 +72,7 @@ const createTicket = async (req, res) => {
 
     res.status(201).send({ status: 'success', payload: newTicket })
   } catch (err) {
-    console.error({ error: err.message })
+    req.logger.error({ error: err.message })
     res.status(400).send({ status: 'error', error: 'An error ocurred while creating the ticket' })
   }
 }
@@ -82,7 +82,7 @@ const updateTicket = async (req, res) => {
     const updatedTicket = await ticketsService.updateTicket(tid, ticketData)
     res.send({ status: 'success', payload: updatedTicket })
   } catch (err) {
-    console.error({ error: err.message })
+    req.logger.error({ error: err.message })
     res.status(400).send({ status: 'error', error: 'Invalid ticket data or ticket not found' })
   }
 }
@@ -93,7 +93,7 @@ const deleteTicket = async (req, res) => {
     const result = await ticketsService.deleteTicket(tid)
     res.send({ status: 'success', message: 'Ticket deleted', payload: result })
   } catch (err) {
-    console.error({ error: err.message })
+    req.logger.error({ error: err.message })
     res.status(400).send({ status: 'error', error: err })
   }
 }

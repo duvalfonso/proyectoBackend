@@ -114,13 +114,4 @@ export const initializePassport = () => {
       return done(error)
     }
   }))
-
-  // passport.serializeUser(function (user, done) {
-  //   return done(null, user.id)
-  // })
-
-  // passport.deserializeUser(async function (id, done) {
-  //   const user = await UserModel.findOne({ _id: id })
-  //   return done(null, user)
-  // })
 }
