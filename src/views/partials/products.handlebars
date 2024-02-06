@@ -18,16 +18,16 @@
 					<p>{{this.description}}</p>
 					<b>SKU: {{this.code}}</b>
 					<p>Stock: {{this.stock}}</p>
-					{{#unless this.loggedIn}}
-					<button data-product-id="{{this._id}}" data-cart-id="{{cart}}" class="add-to-cart">Agregar al
-						carrito</button>
-					{{/unless}}
+
+					<button data-product-id="{{this._id}}" data-cart-id="{{../cartId}}" class="add-to-cart">Agregar al
+						carrito {{cartId}}</button>
+
 				</div>
 			</div>
-			{{#if loggedIn}}
-			<button data-product-id="{{this._id}}" data-cart-id="{{this.cart}}" class="add-to-cart">Agregar al
+
+			<button data-product-id="{{this._id}}" data-cart-id="{{../cartId}}" class="add-to-cart">Agregar al
 				carrito</button>
-			{{/if}}
+
 		</div>
 		{{/each}}
 	</div>

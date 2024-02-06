@@ -1,9 +1,14 @@
 import { ticketsService, cartsService, productsService } from '../services/repositories.js'
 
 const getTickets = async (req, res) => {
-  const tickets = await ticketsService.getTickets()
-  console.log(req.user)
-  res.send({ status: 'success', payload: tickets })
+  try {
+    if (req.user) {
+      const tickets = await ticketsService.getTickets()
+      res.send({ status: 'success', payload: tickets })
+    }
+  } catch (err) {
+    req.logger.error({ status: 'error', error: err.message })
+  }
 }
 
 const getTicketById = async (req, res) => {
@@ -30,7 +35,6 @@ const createTicket = async (req, res) => {
       }
     }
 
-    // If there are products with insufficient stock, inform the buyer and ask for confirmation
     if (productsOutOfStock.length > 0) {
       return res.status(400).send({
         status: 'error',
@@ -39,12 +43,10 @@ const createTicket = async (req, res) => {
       })
     }
 
-    // Update product stock
     for (const { productId, newStock } of productsToUpdateStock) {
       await productsService.updateProductStock(productId, newStock)
     }
 
-    // Construct ticket data using cart information
     const ticketProducts = cart.items
       .map(item => ({
         productId: item.productId._id,
@@ -54,18 +56,16 @@ const createTicket = async (req, res) => {
       }))
 
     const ticketData = {
-      user: req.user._id, // Assuming user ID is available in req.user
+      user: req.user._id,
       cartId: cart._id,
       products: ticketProducts,
       totalPrice: cart.subTotal,
-      status: 'preparing', // Set ticket status to "preparing"
-      date: new Date() // Assuming current date is used as ticket date
+      status: 'preparing',
+      date: new Date()
     }
 
-    // Create ticket using the constructed ticket data
     const newTicket = await ticketsService.createTicket(ticketData)
 
-    // Update product stock after ticket creation
     for (const { productId, newStock } of productsToUpdateStock) {
       await productsService.updateProductStock(productId, newStock)
     }

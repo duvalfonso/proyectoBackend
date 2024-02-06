@@ -1,5 +1,6 @@
 import express from 'express'
 import passport from 'passport'
+import { passportCall } from '../../services/auth.js'
 import ProductManager from '../../dao/fileSystem/managers/productManager.js'
 import { buildResponsePaginated } from '../../utils.js'
 
@@ -22,36 +23,41 @@ initializeProductManager()
 
 const router = express.Router()
 
-router.get('/', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  const { limit = 10, page = 1, sort, search } = req.query
-  const criteria = {}
-  const options = { limit, page }
-  if (sort) {
-    options.sort = sort
-      ? sort === 'asc'
-        ? { price: 1 }
-        : sort === 'desc'
-          ? { price: -1 }
-          : null
-      : null
-  }
-  if (search) {
-    criteria.category = search
-  }
-  const result = await ProductModel.paginate(criteria, options)
-  const urlBase = 'http://localhost:8080/'
-  const data = buildResponsePaginated({ ...result, sort, search }, urlBase)
-  const loggedIn = req.cookies.authToken
-  const user = await UserModel.findById(req.user.id).lean()
-  console.log(user.cart)
+router.get('/', passportCall('jwt', { strategyType: 'jwt' }), async (req, res) => {
+  try {
+    const { limit = 10, page = 1, sort, search } = req.query
+    const criteria = {}
+    const options = { limit, page }
+    if (sort) {
+      options.sort = sort
+        ? sort === 'asc'
+          ? { price: 1 }
+          : sort === 'desc'
+            ? { price: -1 }
+            : null
+        : null
+    }
+    if (search) {
+      criteria.category = search
+    }
+    const result = await ProductModel.paginate(criteria, options)
+    const urlBase = 'http://localhost:8080/'
+    const data = buildResponsePaginated({ ...result, sort, search }, urlBase)
+    const loggedIn = req.cookies.authToken
+    if (!req.user) {
+      res.redirect('/login')
+    }
 
-  res.render('index', {
-    title: 'Productos',
-    style: 'products.css',
-    ...data,
-    loggedIn,
-    cart: user.cart
-  })
+    res.render('index', {
+      title: 'Productos',
+      style: 'products.css',
+      ...data,
+      loggedIn,
+      cartId: req.user.cart
+    })
+  } catch (err) {
+    req.logger.error({ error: err.message, message: 'Something went wrong' })
+  }
 })
 
 router.get('/carts/:cid', async (req, res) => {
@@ -68,7 +74,7 @@ router.get('/carts/:cid', async (req, res) => {
       loggedIn
     })
   } catch (err) {
-    console.error(err.message)
+    req.logger.error(err.message)
   }
 })
 
@@ -89,6 +95,7 @@ router.post('/products', async (req, res) => {
     req.io.emit('update-list', newProduct)
     res.send({ status: 'success', payload: newProduct })
   } catch (err) {
+    req.logger.error({ message: 'Something went wrong', error: err.message })
     res.status(400).send({ error: err.message })
   }
 })
@@ -100,6 +107,7 @@ router.delete('/products/:id', async (req, res) => {
     req.io.emit('remove-product', id)
     res.json({ message: 'Product succesfully deleted.' })
   } catch (err) {
+    req.logger.error({ message: 'Something went wrong', error: err.message })
     res.status(400).send({ error: err.message })
   }
 })
@@ -117,26 +125,6 @@ router.get('/login', (req, res) => {
     loggedIn
   })
 })
-
-// router.post('/api/sessions/login', async (req, res) => {
-//   const { email, password } = req.body
-//   const user = await UserModel.findOne({ email, password })
-//   if (!user) { res.render('error', { title: 'Error' }) }
-// })
-
-// Router GET with Sessions
-// router.get('/profile', (req, res) => {
-//   console.log(req.user)
-//   if (!req.cookies.authToken) {
-//     return res.redirect('/login')
-//   }
-//   const user = req.user.toJSON()
-//   res.render('profile', {
-//     user,
-//     name: `${user.firstName} ${user.lastName}`,
-//     title: 'My Profile'
-//   })
-// })
 
 router.get('/profile', passport.authenticate('jwt', { session: false }), async (req, res) => {
   if (!req.cookies.authToken) {

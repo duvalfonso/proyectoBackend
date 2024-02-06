@@ -39,7 +39,7 @@ addToCartButtons.forEach(button => {
   button.addEventListener('click', function (e) {
     const productId = e.currentTarget.dataset.productId
     console.log(productId)
-    const cartId = e.currentTarget.dataset.cart
+    const cartId = e.currentTarget.dataset.cartId
     console.log(e.currentTarget.dataset)
     addToCart(cartId, productId, 1)
   })

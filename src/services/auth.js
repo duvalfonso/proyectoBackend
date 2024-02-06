@@ -21,6 +21,8 @@ export const passportCall = (strategy, options = {}) => {
             return next()
           case 'locals':
             return res.sendUnauthorized(info.message ? info.message : info.toString())
+          default:
+            return res.status(401).send({ error: 'Unauthorized' })
         }
       }
 
