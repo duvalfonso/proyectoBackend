@@ -38,27 +38,44 @@ modalBackgrounds.forEach(modalBackground => {
 addToCartButtons.forEach(button => {
   button.addEventListener('click', function (e) {
     const productId = e.currentTarget.dataset.productId
-    console.log(productId)
     const cartId = e.currentTarget.dataset.cartId
     console.log(e.currentTarget.dataset)
     addToCart(cartId, productId, 1)
   })
 })
 
+// async function addToCart (cartId, productId, quantity) {
+//   const response = await fetch(`/api/moncarts/${cartId}/product/${productId}`, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify({ quantity })
+//   })
+//     .then(response => response.json())
+//     .then(data => {
+//       console.log(data)
+//       console.log(response)
+//     })
+//     .catch(err => {
+//       console.error(err)
+//     })
+// }
+
 async function addToCart (cartId, productId, quantity) {
-  const response = await fetch(`/api/moncarts/${cartId}/product/${productId}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ quantity })
-  })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data)
-      console.log(response)
+  try {
+    const response = await fetch(`/api/moncarts/${cartId}/product/${productId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ quantity })
     })
-    .catch(err => {
-      console.error(err)
-    })
+
+    const data = await response.json()
+    console.log(data)
+    console.log(response)
+  } catch (err) {
+    console.error(err)
+  }
 }

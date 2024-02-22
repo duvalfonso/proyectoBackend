@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt'
 import passport from 'passport'
 import jwt from 'jsonwebtoken'
+import config from '../config/config.js'
 
 export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10))
 export const validatePassword = (password, user) => bcrypt.compareSync(password, user.password)
@@ -33,5 +34,5 @@ export const passportCall = (strategy, options = {}) => {
 }
 
 export const generateToken = (user) => {
-  return jwt.sign(user, 'jwtSecret', { expiresIn: '1h' })
+  return jwt.sign(user, config.jwt.TOKEN_SECRET, { expiresIn: '1h' })
 }

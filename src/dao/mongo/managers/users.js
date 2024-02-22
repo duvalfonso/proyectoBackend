@@ -9,6 +9,10 @@ export default class UsersManager {
     return userModel.findById(params).lean()
   }
 
+  getUserByEmail = (email) => {
+    return userModel.findOne(email).lean()
+  }
+
   createUser = (user) => {
     return userModel.create(user)
   }

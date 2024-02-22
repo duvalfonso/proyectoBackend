@@ -3,10 +3,12 @@ import { Strategy as LocalStrategy } from 'passport-local'
 import { Strategy as GithubStrategy } from 'passport-github2'
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt'
 import UserModel from '../dao/mongo/models/user.js'
+import { cartsService, usersService } from '../services/repositories.js'
 
 import { cookieExtractor, createHash, isValidPassword } from '../utils.js'
-import dotenv from 'dotenv'
-dotenv.config()
+import config from './config.js'
+import UserInsertDTO from '../dto/User/insertDTO.js'
+import UserTokenDTO from '../dto/User/tokenDTO.js'
 
 export const initializePassport = () => {
   const registerOpts = {
@@ -30,21 +32,26 @@ export const initializePassport = () => {
           if (!firstName || !lastName) {
             return done(new Error('Todos los campos son requeridos'))
           }
-          const user = await UserModel.findOne({ email })
+          const user = await usersService.getUserByEmail({ email })
           if (user) {
             return done(null, false, { message: 'El usuario ya existe' })
           }
 
-          const newUser = await UserModel.create({
+          const cart = await cartsService.createCart()
+
+          const hashedPassword = createHash(password)
+          const newUser = UserInsertDTO.getFrom({
             firstName,
             lastName,
             email,
-            password: createHash(password),
+            password: hashedPassword,
+            cart,
             role
           })
-          done(null, newUser)
+          const result = await usersService.createUser(newUser)
+          return done(null, result)
         } catch (error) {
-          done(error)
+          return done(error)
         }
       }
     )
@@ -55,32 +62,24 @@ export const initializePassport = () => {
     new LocalStrategy(
       { usernameField: 'email' },
       async (email, password, done) => {
-        let user = await UserModel.findOne({ email })
-        if (!user) {
-          return done(null, false, { message: 'Credenciales incorrectas' })
-        }
+        // let resultUser
+        const user = await usersService.getUserByEmail({ email })
+        if (!user) return done(null, false, { message: 'Credenciales incorrectas' })
 
         const isNotValidPassword = !isValidPassword(password, user)
-        if (isNotValidPassword) {
-          return done(null, false, { message: 'Contraseña inválida' })
-        }
+        if (isNotValidPassword) return done(null, false, { message: 'Contraseña inválida' })
 
-        user = {
-          id: user._id,
-          name: `${user.firstName} ${user.lastName}`,
-          email: user.email,
-          role: user.role,
-          cart: user.cart
-        }
-        return done(null, user)
+        const resultUser = UserTokenDTO.getFrom(user)
+
+        return done(null, resultUser)
       }
     )
   )
 
   const githubOpts = {
-    clientID: `${process.env.GITHUB_CLIENT_ID}`,
-    clientSecret: `${process.env.GITHUB_APP_SECRET}`,
-    callbackUrl: `${process.env.GITHUB_CALLBACK_URL}`
+    clientID: `${config.passport.GITHUB_CLIENT_ID}`,
+    clientSecret: `${config.passport.GITHUB_APP_SECRET}`,
+    callbackUrl: `${config.passport.GITHUB_CALLBACK_URL}`
   }
 
   passport.use(
@@ -106,7 +105,7 @@ export const initializePassport = () => {
 
   passport.use('jwt', new JWTStrategy({
     jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-    secretOrKey: 'jwtSecret'
+    secretOrKey: `${config.jwt.JWT_SECRET}`
   }, async (payload, done) => {
     try {
       return done(null, payload)

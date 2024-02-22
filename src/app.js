@@ -7,7 +7,7 @@ import { initializePassport } from './config/passport.config.js'
 // import MongoStore from 'connect-mongo'
 
 import productsRouter from './routes/api/products.router.js'
-import cartsRouter from './routes/api/cart.router.js'
+import fsCartsRouter from './routes/api/fsCart.router.js'
 import handlebars from 'express-handlebars'
 import viewsRouter from './routes/views/views.router.js'
 import indexRouter from './routes/api/index.router.js'
@@ -19,8 +19,9 @@ import loggerTest from './routes/api/loggertest.router.js'
 import SessionsRouter from './routes/api/Sessions.router.js'
 import usersRouter from './routes/api/users.router.js'
 import monProductsRouter from './routes/api/mongooseProduct.router.js'
-import monCartsRouter from './routes/api/mongooseCart.router.js'
+// import monCartsRouter from './routes/api/mongooseCart.router.js'
 import ticketsRouter from './routes/api/tickets.router.js'
+import CartsRouter from './routes/api/Carts.router.js'
 
 import { Server } from 'socket.io'
 import ProductManager from './dao/fileSystem/managers/productManager.js'
@@ -28,6 +29,7 @@ import ProductManager from './dao/fileSystem/managers/productManager.js'
 import mongoose from 'mongoose'
 
 import dotenv from 'dotenv'
+import { Exception } from './utils/exceptions.js'
 dotenv.config()
 
 const productManager = new ProductManager('./files/products.json')
@@ -76,6 +78,7 @@ app.use(passport.initialize())
 // app.use(passport.session())
 
 const sessionsRouter = new SessionsRouter()
+const cartsRouter = new CartsRouter()
 
 app.use((req, res, next) => {
   req.io = io
@@ -90,10 +93,11 @@ app.use('/loggerTest', loggerTest)
 
 app.use('/api/products', productsRouter)
 app.use('/api/users', usersRouter)
-app.use('/api/carts', cartsRouter)
+app.use('/api/carts', fsCartsRouter)
 
 app.use('/api/monproducts', monProductsRouter)
-app.use('/api/moncarts', monCartsRouter)
+// app.use('/api/moncarts', monCartsRouter)
+app.use('/api/moncarts', cartsRouter.getRouter())
 app.use('/api/tickets', ticketsRouter)
 
 io.on('connection', socket => {
@@ -109,6 +113,12 @@ io.on('connection', socket => {
 })
 
 app.use((err, req, res, next) => {
+  let message = 'Unexpected Error Ocurred'
+  let statusCode = 500
+  if (err instanceof Exception) {
+    message = err.message
+    statusCode = err.statusCode
+  }
   console.error(err)
-  res.status(500).send({ error: 'Unexpected Error Ocurred' }).end()
+  res.status(statusCode).json({ status: 'error', message })
 })

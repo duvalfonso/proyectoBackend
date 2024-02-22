@@ -1,7 +1,8 @@
 export default class UserInsertDTO {
   static getFrom = (user) => {
     return {
-      name: `${user.firstName} ${user.lastName}`,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
       role: user.role,
       password: user.password,

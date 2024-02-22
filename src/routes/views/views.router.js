@@ -141,8 +141,8 @@ router.get('/profile', passport.authenticate('jwt', { session: false }), async (
   })
 })
 
-router.get('/recover-password', (req, res) => {
-  res.render('recover-pass', { title: 'Recuperar contraseña' })
+router.get('/reset-password', (req, res) => {
+  res.render('reset-pass', { title: 'Recuperar contraseña' })
 })
 
 export default router

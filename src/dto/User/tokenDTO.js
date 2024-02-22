@@ -1,8 +1,8 @@
 export default class UserTokenDTO {
   static getFrom = user => {
     return {
-      name: user.name,
       id: user._id,
+      name: user.name,
       role: user.role,
       cart: user.cart
     }

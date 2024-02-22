@@ -1,6 +1,5 @@
 import cartModel from '../models/cart.js'
-import DaoProductsManager from './products.js'
-const productsService = new DaoProductsManager()
+import productModel from '../models/product.js'
 
 export default class DaoCartsManager {
   getCarts = async () => {
@@ -16,7 +15,7 @@ export default class DaoCartsManager {
   }
 
   addProduct = async (cartId, productId, quantity) => {
-    const product = await productsService.getProductById({ _id: productId })
+    const product = await productModel.findOne({ _id: productId })
 
     if (!product) {
       throw new Error(`Product with id: ${productId} not found!`)
@@ -28,14 +27,14 @@ export default class DaoCartsManager {
       throw new Error(`Cart with id: ${cartId} not found!`)
     }
 
-    const existingItem = cart.items.find(item => item.productId.toString() === productId)
+    const existingItemIndex = cart.items.findIndex(item => item.productId._id.toString() === productId)
 
-    if (existingItem) {
+    if (existingItemIndex !== -1) {
       if (quantity > 0) {
-        existingItem.quantity += quantity
-        existingItem.total = existingItem.quantity * existingItem.price
+        cart.items[existingItemIndex].quantity += quantity
+        cart.items[existingItemIndex].total = cart.items[existingItemIndex].quantity * cart.items[existingItemIndex].price
       } else {
-        cart.items = cart.items.filter(item => item.productId.toString() !== productId)
+        cart.items.splice(existingItemIndex, 1)
       }
     } else if (quantity > 0) {
       cart.items.push({

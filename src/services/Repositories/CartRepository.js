@@ -23,6 +23,10 @@ export default class CartRepository {
     return this.dao.updateQuantity(id, data)
   }
 
+  updateListOfProducts = (cartId, productsArray) => {
+    return this.dao.updateListOfProducts(cartId, productsArray)
+  }
+
   clearCart = (id) => {
     return this.dao.clearCart(id)
   }

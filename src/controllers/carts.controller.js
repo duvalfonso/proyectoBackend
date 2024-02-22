@@ -3,7 +3,7 @@ import { cartsService } from '../services/repositories.js'
 const getCarts = async (req, res) => {
   try {
     const carts = await cartsService.getCarts()
-    res.send({ status: 'success', payload: carts })
+    res.sendSuccessWithPayload(carts)
   } catch (err) {
     req.logger.error(err)
   }
@@ -11,7 +11,7 @@ const getCarts = async (req, res) => {
 
 const createCart = async (req, res) => {
   const newCart = await cartsService.createCart()
-  res.send({ status: 'success', payload: newCart })
+  res.sendSuccessWithPayload(newCart)
 }
 
 const getCartById = async (req, res) => {
@@ -20,14 +20,10 @@ const getCartById = async (req, res) => {
 
     const result = await cartsService.getCartById(cid)
 
-    res.status(200).json({
-      status: 'success',
-      msg: 'Process successful',
-      cartData: result
-    })
+    res.sendSuccessWithPayload(result)
   } catch (err) {
     req.logger.error(err)
-    res.status(400).json({ error: err.message })
+    res.sendUnathorized(err)
   }
 }
 
@@ -37,6 +33,7 @@ const addProduct = async (req, res) => {
     const { quantity } = req.body
 
     const result = await cartsService.addProduct(cid, pid, quantity)
+
     res.status(200).json({
       status: 'success',
       msg: 'Proccess successful',
@@ -60,6 +57,21 @@ const updateQuantity = async (req, res) => {
   } catch (err) {
     req.logger.error(err)
     res.status(400).json({ error: err.message })
+  }
+}
+
+const updateListOfProducts = async (req, res) => {
+  try {
+    const { cid } = req.params
+    const { productsArray } = req.body
+    const result = await cartsService.updateListOfProducts(cid, productsArray)
+    res.status(200).send({
+      status: 'success',
+      updatedCart: result
+    })
+  } catch (err) {
+    req.logger.error({ error: err.message })
+    res.status(500).send({ status: 'error', error: err })
   }
 }
 
@@ -98,6 +110,7 @@ export default {
   getCartById,
   addProduct,
   updateQuantity,
+  updateListOfProducts,
   removeProduct,
   clearCart
 }

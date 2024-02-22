@@ -22,4 +22,6 @@ router.get('/profile/carts', passportCall('jwt', { strategyType: 'jwt', session:
 
 router.get('/:uid', usersController.getUserById)
 
+router.post('/reset-password', usersController.resetPassword)
+
 export default router
