@@ -1,5 +1,4 @@
 import express from 'express'
-// import session from 'express-session'
 import passport from 'passport'
 import __dirname from './utils.js'
 import cookieParser from 'cookie-parser'
@@ -19,7 +18,6 @@ import loggerTest from './routes/api/loggertest.router.js'
 import SessionsRouter from './routes/api/Sessions.router.js'
 import usersRouter from './routes/api/users.router.js'
 import monProductsRouter from './routes/api/mongooseProduct.router.js'
-// import monCartsRouter from './routes/api/mongooseCart.router.js'
 import ticketsRouter from './routes/api/tickets.router.js'
 import CartsRouter from './routes/api/Carts.router.js'
 
@@ -42,8 +40,6 @@ initializeProductManager()
 const app = express()
 const PORT = process.env.PORT || 8080
 
-// const SESSION_SECRET = 'secret-string'
-
 const server = app.listen(PORT, () => console.log(`Listening on ${PORT}. ${server} `))
 
 const connection = mongoose.connect(
@@ -64,16 +60,6 @@ app.engine('handlebars', handlebars.engine())
 app.set('views', __dirname + '/views')
 app.set('view engine', 'handlebars')
 
-// app.use(session({
-//   store: new MongoStore({
-//     mongoUrl: `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.fueracc.mongodb.net/${process.env.DEFAULT_DATA_BASE}?retryWrites=true&w=majority`,
-//     ttl: 240
-//   }),
-//   secret: SESSION_SECRET,
-//   resave: false,
-//   saveUninitialized: false
-// }))
-
 app.use(passport.initialize())
 // app.use(passport.session())
 
@@ -86,7 +72,6 @@ app.use((req, res, next) => {
 })
 
 app.use('/api/sessions', sessionsRouter.getRouter())
-// app.use('/api/sessions', authRouter)
 app.use('/', viewsRouter, indexRouter)
 app.use('/', mockRouter)
 app.use('/loggerTest', loggerTest)
@@ -96,7 +81,6 @@ app.use('/api/users', usersRouter)
 app.use('/api/carts', fsCartsRouter)
 
 app.use('/api/monproducts', monProductsRouter)
-// app.use('/api/moncarts', monCartsRouter)
 app.use('/api/moncarts', cartsRouter.getRouter())
 app.use('/api/tickets', ticketsRouter)
 

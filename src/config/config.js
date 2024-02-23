@@ -16,7 +16,7 @@ export default {
     USER: process.env.EMAIL_USER,
     PASSWORD: process.env.EMAIL_PASSWORD,
     PORT: process.env.EMAIL_PORT,
-    service: process.env.EMAIL_SERVICE
+    SERVICE: process.env.EMAIL_SERVICE
   },
   passport: {
     GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,

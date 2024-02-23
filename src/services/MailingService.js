@@ -1,16 +1,16 @@
 import nodemailer from 'nodemailer'
-import config from '../config/config.js'
 import DMailInfo from '../constants/DMailInfo.js'
 import { generateMailTemplate } from '../utils.js'
 
 export default class MailingService {
   constructor () {
     this.mailer = nodemailer.createTransport({
-      service: config.mailer.service,
-      port: config.mailer.PORT,
+      service: process.env.EMAIL_SERVICE,
+      port: process.env.EMAIL_PORT,
+      secure: false,
       auth: {
-        user: config.mailer.USER,
-        pass: config.mailer.PASSWORD
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
       }
     })
   }
@@ -19,7 +19,7 @@ export default class MailingService {
     const mailInfo = DMailInfo[template]
     const html = await generateMailTemplate(template, payload)
     const result = await this.mailer.sendMail({
-      from: `${config.mailer.USER}`,
+      from: '"Fake Store 🧞‍♂️" <fake@store.mail>',
       to: emails,
       html,
       ...mailInfo

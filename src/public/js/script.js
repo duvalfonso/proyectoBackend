@@ -44,24 +44,6 @@ addToCartButtons.forEach(button => {
   })
 })
 
-// async function addToCart (cartId, productId, quantity) {
-//   const response = await fetch(`/api/moncarts/${cartId}/product/${productId}`, {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({ quantity })
-//   })
-//     .then(response => response.json())
-//     .then(data => {
-//       console.log(data)
-//       console.log(response)
-//     })
-//     .catch(err => {
-//       console.error(err)
-//     })
-// }
-
 async function addToCart (cartId, productId, quantity) {
   try {
     const response = await fetch(`/api/moncarts/${cartId}/product/${productId}`, {

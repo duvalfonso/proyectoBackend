@@ -53,23 +53,18 @@ export default class BaseRouter {
       if (policies[0] === 'PUBLIC') return next()
       const user = req.user
 
-      // Check if the endpoint allows unauthenticated access
       if (policies[0] === 'NO_AUTH') {
-        // If the user is authenticated, return Unauthorized
         if (user) return res.status(401).send({ status: 'error', error: 'Unauthorized' })
         return next()
       }
 
-      // Check if the user is authenticated
       if (!user) return res.status(401).send({ status: 'error', error: 'Unauthorized' })
 
-      // Check if the user's role has permission to access the endpoint
-      const userRole = user.role.toLowerCase() // Converting to lowercase to match enum values
+      const userRole = user.role.toLowerCase()
       if (!policies.includes(userRole)) {
         return res.status(403).send({ status: 'error', error: 'Forbidden' })
       }
 
-      // If the user's role is allowed, proceed with the next middleware or route handler
       next()
     }
   }

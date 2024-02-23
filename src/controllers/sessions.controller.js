@@ -16,14 +16,24 @@ const register = async (req, res) => {
 }
 
 const login = (req, res) => {
-  const token = generateToken(req.user)
-  res.cookie('authToken', token, {
-    maxAge: 1000 * 3600 * 24,
-    httpOnly: true
-  }).sendSuccess('Logged In')
+  try {
+    const token = generateToken(req.user)
+    res.cookie('authToken', token, {
+      maxAge: 1000 * 3600 * 24,
+      httpOnly: true
+    }).sendSuccess('Logged In')
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const logout = (req, res) => {
+  res.clearCookie('authToken')
+  res.sendSuccess('Logged out successfully')
 }
 
 export default {
   login,
-  register
+  register,
+  logout
 }

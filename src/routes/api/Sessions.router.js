@@ -6,5 +6,6 @@ export default class SessionsRouter extends BaseRouter {
   init () {
     this.post('/register', ['NO_AUTH'], passportCall('register', { strategyType: 'locals' }), sessionsController.register)
     this.post('/login', ['NO_AUTH'], passportCall('login', { strategyType: 'locals' }), sessionsController.login)
+    this.post('/logout', ['PUBLIC'], sessionsController.logout)
   }
 }

@@ -24,6 +24,9 @@ initializeProductManager()
 const router = express.Router()
 
 router.get('/', passportCall('jwt', { strategyType: 'jwt' }), async (req, res) => {
+  if (!req.cookies.authToken) {
+    return res.redirect('/login')
+  }
   try {
     const { limit = 10, page = 1, sort, search } = req.query
     const criteria = {}
@@ -120,6 +123,9 @@ router.get('/register', (req, res) => {
 
 router.get('/login', (req, res) => {
   const loggedIn = req.cookies.authToken
+  if (loggedIn) {
+    return res.redirect('/')
+  }
   res.render('login', {
     title: 'Login',
     loggedIn
