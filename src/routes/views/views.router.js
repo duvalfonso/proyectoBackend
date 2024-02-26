@@ -151,4 +151,16 @@ router.get('/reset-password', (req, res) => {
   res.render('reset-pass', { title: 'Recuperar contraseña' })
 })
 
+router.get('/reset-email-sent', (req, res) => {
+  res.render('reset-email-sent', {
+    title: 'Request sent!'
+  })
+})
+
+router.get('/reset-password/:token/:uId', (req, res) => {
+  res.render('reset-email-sent', {
+    title: 'Solicitud enviada!'
+  })
+})
+
 export default router

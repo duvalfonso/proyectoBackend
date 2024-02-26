@@ -62,7 +62,6 @@ export const initializePassport = () => {
     new LocalStrategy(
       { usernameField: 'email' },
       async (email, password, done) => {
-        // let resultUser
         const user = await usersService.getUserByEmail({ email })
         if (!user) return done(null, false, { message: 'Credenciales incorrectas' })
 

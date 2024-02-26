@@ -5,6 +5,7 @@ import config from '../config/config.js'
 
 export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10))
 export const validatePassword = (password, user) => bcrypt.compareSync(password, user.password)
+export const validateCode = (code, user) => bcrypt.compareSync(code, user.resetPasswordCode)
 
 export const passportCall = (strategy, options = {}) => {
   return async (req, res, next) => {

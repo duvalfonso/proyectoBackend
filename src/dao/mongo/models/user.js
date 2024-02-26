@@ -11,7 +11,8 @@ const schema = new mongoose.Schema({
   role: { type: String, enum: ['test', 'user', 'premium', 'admin', 'superadmin'], default: 'user' },
   status: { type: String, default: 'active' },
   age: { type: Number },
-  orders: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Tickets' }]
+  orders: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'Tickets' }],
+  resetPasswordCode: { type: String, default: null }
 })
 
 const userModel = mongoose.model(collection, schema)
