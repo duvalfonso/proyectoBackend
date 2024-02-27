@@ -112,7 +112,12 @@ router.delete('/:pid', passportCall('jwt', { strategyType: 'jwt' }), async (req,
   const authorizedRoles = ['admin', 'premium']
   if (!userRole.includes(authorizedRoles)) return res.status(403).send({ status: 'error', error: 'Forbidden' })
   try {
+    const userId = req.user.id
     const pid = req.params.pid
+    const product = await productsService.getProductById(pid)
+    const productOwner = product.owner
+
+    if (userId !== productOwner) return res.status(403).send({ status: 'error', error: 'Forbidden' })
     const result = await productsService.deleteProduct(pid)
     console.log(result)
     res.send({ status: 'success', message: 'Product deleted' })

@@ -1,4 +1,4 @@
-import { cartsService } from '../services/repositories.js'
+import { cartsService, productsService } from '../services/repositories.js'
 
 const getCarts = async (req, res) => {
   try {
@@ -29,9 +29,12 @@ const getCartById = async (req, res) => {
 
 const addProduct = async (req, res) => {
   try {
+    const uid = req.user.id
     const { pid, cid } = req.params
     const { quantity } = req.body
+    const product = await productsService.getProductById(pid)
 
+    if (uid === product.owner) return res.status(403).send({ status: 'error', error: 'Forbidden' })
     const result = await cartsService.addProduct(cid, pid, quantity)
 
     res.status(200).json({
@@ -41,6 +44,7 @@ const addProduct = async (req, res) => {
     })
   } catch (err) {
     req.logger.error(err)
+    return res.status(400).send({ error: 'Bad request' })
   }
 }
 

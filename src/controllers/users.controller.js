@@ -50,6 +50,20 @@ const updateUser = async (req, res) => {
   }
 }
 
+const updateUserRole = async (req, res) => {
+  const { uid } = req.params
+  const user = await usersService.getUserBy({ _id: uid })
+  const userRole = user.role
+  if (userRole === 'user') {
+    const result = await usersService.updateUser({ _id: uid }, { role: 'admin' })
+    return res.send({ status: 'success', result })
+  }
+  if (userRole === 'admin') {
+    const result = await usersService.updateUser({ _id: uid }, { role: 'user' })
+    return res.send({ status: 'success', result })
+  }
+}
+
 const resetPassword = async (req, res) => {
   const { email } = req.body
   if (!email) {
@@ -144,6 +158,7 @@ export default {
   getUserById,
   createUser,
   updateUser,
+  updateUserRole,
   resetPassword,
   verifyResetToken,
   setNewPass,

@@ -6,6 +6,7 @@ import { passportCall } from '../../services/auth.js'
 const router = Router()
 
 router.get('/profile/carts', passportCall('jwt', { strategyType: 'jwt', session: false }), async (req, res) => {
+  if (!req.user) return res.redirect('/login')
   try {
     if (req.user) {
       const user = await UserModel.findById(req.user.id).populate('cart')
@@ -25,5 +26,6 @@ router.get('/:uid', usersController.getUserById)
 router.post('/reset-password', usersController.resetPassword)
 router.get('/reset-password/:code/:uid', usersController.verifyResetToken)
 router.post('/reset-password/:code/:uid', usersController.setNewPass)
+router.put('/premium/:uid', passportCall('jwt', { strategyType: 'jwt', session: false }), usersController.updateUserRole)
 
 export default router
