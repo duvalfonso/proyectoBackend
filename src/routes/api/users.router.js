@@ -24,6 +24,6 @@ router.get('/:uid', usersController.getUserById)
 
 router.post('/reset-password', usersController.resetPassword)
 router.get('/reset-password/:code/:uid', usersController.verifyResetToken)
-// router.post('/reset-password/:code/:uId', usersController)
+router.post('/reset-password/:code/:uid', usersController.setNewPass)
 
 export default router

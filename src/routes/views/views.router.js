@@ -153,13 +153,16 @@ router.get('/reset-password', (req, res) => {
 
 router.get('/reset-email-sent', (req, res) => {
   res.render('reset-email-sent', {
-    title: 'Request sent!'
+    title: 'Solicitud enviada!'
   })
 })
 
-router.get('/reset-password/:token/:uId', (req, res) => {
-  res.render('reset-email-sent', {
-    title: 'Solicitud enviada!'
+router.get('/reset-password/:token/:uid', (req, res) => {
+  const { token, uid } = req.params
+  res.render('reset-form', {
+    title: 'Establece una contraseña nueva!',
+    token,
+    uid
   })
 })
 

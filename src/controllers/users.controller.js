@@ -1,5 +1,5 @@
 import { usersService } from '../services/repositories.js'
-import { generateToken, createHash, validateCode } from '../services/auth.js'
+import { generateToken, createHash, validateCode, validatePassword, verifyToken } from '../services/auth.js'
 // import bcrypt from 'bcrypt'
 import MailingService from '../services/MailingService.js'
 import DTemplates from '../constants/DTemplates.js'
@@ -67,7 +67,7 @@ const resetPassword = async (req, res) => {
     const hashedToken = createHash(token)
     await usersService.updateUser({ _id: user._id }, { resetPasswordCode: hashedToken })
 
-    const resetLink = `http://localhost:8080/api/users/reset-password/${hashedToken}/${user._id}`
+    const resetLink = `http://localhost:8080/reset-password/${token}/${user._id}`
 
     const payload = {
       name: user.firstName,
@@ -98,26 +98,36 @@ const verifyResetToken = async (req, res) => {
     if (!user) return res.status(400).json({ status: 'error', error: 'Invalid request' })
     const isNotValidCode = !validateCode(code, user)
     if (isNotValidCode) return res.status(400).json({ status: 'error', error: 'Invalid request' })
-    res.render('reset-form', {
-      title: 'Set a new password'
-    })
+    res.redirect(`/reset-password/${code}/${uid}`)
   } catch (err) {
     req.logger.error(err)
-    return res.status(500).json({ status: 'error', error: 'Something went wrong:', err })
+    return res.status(500).json({ status: 'error', error: 'Something went wrong' })
   }
 }
 
-// const setNewPass = async (req, res) => {
-//   try {
-//     const { code, uId } = req.params
-//     const { password } = req.body
-//     if (!code || !uId) return res.status(400).json({ status: 'error', error: 'Missing params' })
-//     const user = await usersService.getUserBy(uId)
-//     const previousPass = user.password
-//   } catch (err) {
+const setNewPass = async (req, res) => {
+  try {
+    const { code, uid } = req.params
+    const { newPassword, confirmPassword } = req.body
+    if (!code || !uid) return res.status(400).json({ status: 'error', error: 'Invalid request' })
+    if (newPassword !== confirmPassword) return res.status(400).send({ error: 'Las contraseñas no coinciden' })
 
-//   }
-// }
+    const user = await usersService.getUserBy(uid)
+    const isPrevPass = validatePassword(newPassword, user)
+    if (isPrevPass) return res.send('You cannot use the last password as the new one')
+    const isValidToken = verifyToken(code)
+    if (!isValidToken) {
+      res.status(400).send({ status: 'error', error: 'An error ocurred verifying the data' })
+    }
+    const hashedPassword = createHash(newPassword)
+    await usersService.updateUser({ _id: user._id }, { password: hashedPassword })
+    await usersService.updateUser({ _id: user._id }, { resetPasswordCode: null })
+    res.status(200).send({ status: 'success', message: 'Password successfully restored' })
+  } catch (err) {
+    req.logger.error(err)
+    return res.status(500).send({ status: 'error', error: 'Unexpected error ocurred', err })
+  }
+}
 
 const deleteUser = async (req, res) => {
   try {
@@ -137,6 +147,6 @@ export default {
   updateUser,
   resetPassword,
   verifyResetToken,
-  // setNewPass,
+  setNewPass,
   deleteUser
 }
