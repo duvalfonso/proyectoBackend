@@ -1,5 +1,4 @@
 import express from 'express'
-import passport from 'passport'
 import { passportCall } from '../../services/auth.js'
 import ProductManager from '../../dao/fileSystem/managers/productManager.js'
 import { buildResponsePaginated } from '../../utils.js'
@@ -24,7 +23,7 @@ initializeProductManager()
 const router = express.Router()
 
 router.get('/', passportCall('jwt', { strategyType: 'jwt' }), async (req, res) => {
-  if (!req.cookies.authToken) {
+  if (!req.user) {
     return res.redirect('/login')
   }
   try {
@@ -47,9 +46,6 @@ router.get('/', passportCall('jwt', { strategyType: 'jwt' }), async (req, res) =
     const urlBase = 'http://localhost:8080/'
     const data = buildResponsePaginated({ ...result, sort, search }, urlBase)
     const loggedIn = req.cookies.authToken
-    if (!req.user) {
-      res.redirect('/login')
-    }
 
     res.render('index', {
       title: 'Productos',
@@ -63,7 +59,8 @@ router.get('/', passportCall('jwt', { strategyType: 'jwt' }), async (req, res) =
   }
 })
 
-router.get('/carts/:cid', async (req, res) => {
+router.get('/carts/:cid', passportCall('jwt', { strategyType: 'jwt' }), async (req, res) => {
+  if (!req.user) return res.redirect('/')
   try {
     const { cid } = req.params
     const cart = await CartModel.findById({ _id: cid }).lean()
@@ -81,7 +78,8 @@ router.get('/carts/:cid', async (req, res) => {
   }
 })
 
-router.post('/products', async (req, res) => {
+router.post('/products', passportCall('jwt', { strategyType: 'jwt' }), async (req, res) => {
+  if (req.user.role !== 'premium') return res.status(403).send({ error: 'Forbidden' })
   const { title, description, price, thumbnail, code, stock, status } =
     req.body
   try {
@@ -121,20 +119,20 @@ router.get('/register', (req, res) => {
   })
 })
 
-router.get('/login', (req, res) => {
-  const loggedIn = req.cookies.authToken
-  if (loggedIn) {
+router.get('/login', passportCall('jwt', { strategyType: 'jwt' }), (req, res) => {
+  if (req.user) {
     return res.redirect('/')
   }
+  const loggedIn = req.cookies.authToken
   res.render('login', {
     title: 'Login',
     loggedIn
   })
 })
 
-router.get('/profile', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  if (!req.cookies.authToken) {
-    return res.status(401).json({ message: 'Not authenticated' })
+router.get('/profile', passportCall('jwt', { strategyType: 'jwt' }), async (req, res) => {
+  if (!req.user) {
+    return res.redirect('/login')
   }
 
   const loggedIn = req.cookies.authToken

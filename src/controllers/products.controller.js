@@ -2,13 +2,18 @@ import { productsService } from '../services/repositories.js'
 import uploader from '../services/uploader.js'
 
 const getProducts = async (req, res) => {
-  const products = await productsService.getProducts()
-  res.send({ status: 'success', payload: products })
+  try {
+    const products = await productsService.getProducts()
+    res.send({ status: 'success', payload: products })
+  } catch (err) {
+    req.logger.error(err)
+    return res.status(500).json({ status: 'error', error: err })
+  }
 }
 
 const getProductById = async (req, res) => {
   const { pid } = req.params
-  const product = await productsService.getProductBy({ _id: pid })
+  const product = await productsService.getProductById({ _id: pid })
   res.send({ status: 'success', payload: product })
 }
 

@@ -44,14 +44,11 @@ router.post('/recover-password', async (req, res) => {
 })
 
 router.get('/profile', passport.authenticate('jwt', { session: false }), async (req, res) => {
-  if (!req.cookies.authToken) {
+  if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated' })
   }
 
   const user = await UserModel.findById(req.user.id)
-  // const userId = UserModel.findById(req.session.passport.user)
-  // const completeUser = passport.deserializeUser(userId)
-  // console.log(completeUser)
   res.status(200).json(user)
 })
 

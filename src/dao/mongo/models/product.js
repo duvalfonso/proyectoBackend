@@ -37,6 +37,11 @@ const schema = new mongoose.Schema({
   status: {
     type: Boolean,
     default: true
+  },
+  owner: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: 'Users',
+    default: 'admin'
   }
 }, { timestamps: true })
 

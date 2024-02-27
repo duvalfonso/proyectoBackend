@@ -1,6 +1,5 @@
 import { usersService } from '../services/repositories.js'
 import { generateToken, createHash, validateCode, validatePassword, verifyToken } from '../services/auth.js'
-// import bcrypt from 'bcrypt'
 import MailingService from '../services/MailingService.js'
 import DTemplates from '../constants/DTemplates.js'
 
