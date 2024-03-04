@@ -3,17 +3,18 @@ import passport from 'passport'
 import __dirname from './utils.js'
 import cookieParser from 'cookie-parser'
 import { initializePassport } from './config/passport.config.js'
-// import MongoStore from 'connect-mongo'
 
 import productsRouter from './routes/api/products.router.js'
 import fsCartsRouter from './routes/api/fsCart.router.js'
 import handlebars from 'express-handlebars'
 import viewsRouter from './routes/views/views.router.js'
 import indexRouter from './routes/api/index.router.js'
-// import authRouter from './routes/api/auth.router.js'
 import mockRouter from './routes/api/mock.router.js'
 import attachLogger from './middlewares/logger.js'
 import loggerTest from './routes/api/loggertest.router.js'
+
+import swaggerJSDoc from 'swagger-jsdoc'
+import swaggerUiExpress from 'swagger-ui-express'
 
 import SessionsRouter from './routes/api/Sessions.router.js'
 import usersRouter from './routes/api/users.router.js'
@@ -46,6 +47,20 @@ const connection = mongoose.connect(
   `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.fueracc.mongodb.net/${process.env.DEFAULT_DATA_BASE}?retryWrites=true&w=majority`
 )
 console.log(connection)
+
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Documentación del proyecto eCommerce',
+      description: 'API REST'
+    }
+  },
+  apis: [`${__dirname}/docs/**/*.yaml`]
+}
+
+const specs = swaggerJSDoc(swaggerOptions)
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 
 const io = new Server(server)
 

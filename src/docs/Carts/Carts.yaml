@@ -1,0 +1,245 @@
+paths:
+  /api/moncarts/:
+    get:
+      summary: Obtiene la lista de los carritos existentes en la base de datos, se requiere permisos de administrador para obtener la respuesta
+      tags:
+        - Carts
+      responses:
+        200:
+          description: Lista de carritos obtenida con exito
+        401:
+          description: Usuario no autenticado, se debe iniciar sesión antes de intentar nuevamente la petición
+        403:
+          description: Usuario no cumple con los permisos necesarios para ejecutar la petición
+        500:
+          description: Error interno del servidor, posible fallo en la conexión con la base de datos
+    post:
+      summary: Crea un nuevo carrito, al ser necesario estar asociado a un usuario, se requiere estar autenticado para realizar esta petición
+      tags:
+        - Carts
+      responses:
+        200:
+          description: Carrito creado con exito
+        401:
+          description: Usuario no autenticado, se debe iniciar sesión antes de intentar nuevamente la petición
+        500:
+          description: Error interno del servidor, posible fallo en la conexión con la base de datos
+  /api/moncarts/{cid}:
+    get:
+      summary: Obtiene un carrito de compras específico por su id, debido a que se traerá un carrito de un usuario específico, se requiere iniciar sesión para autenticar permisos de consulta
+      tags:
+        - Carts
+      parameters:
+      - name: cid
+        in: path
+        required: true
+        description: id del carrito a consultar
+        schema:
+          $type: String
+      responses:
+        200:
+          description: Carrito obtenido
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Carts'
+        404:
+          description: Carrito no encontrado
+        500:
+          description: Error interno del servidor, posible fallo en la conexión con la base de datos
+    put:
+      summary: Modifica la lista entera de productos dentro del carrito para ser reemplazada por una ingresada por el administrador
+      tags:
+        - Carts
+      parameters:
+      - name: cid
+        in: path
+        required: true
+        description: id del carrito a modificar
+        schema:
+          $type: String
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateListOfProducts'
+      responses:
+        200:
+          description: Carrito modificado
+        500:
+          description: Error interno del servidor, posible fallo en la conexión con la base de datos
+    delete:
+      summary: Elimina todos los productos dentro del carrito especificado
+      tags:
+        - Carts
+      parameters:
+      - name: cid
+        in: path
+        required: true
+        description: id del carrito
+        schema:
+          $type: string
+      responses:
+        200:
+          description: Todos los productos se eliminan con exito del carrito de compras
+        500:
+          description: Error interno del servidor, posible fallo en la conexión con la base de datos
+  /api/moncarts/{cid}/product/{pid}:
+    post:
+      summary: Agrega un producto al carrito, se requiere usuario autenticado
+      tags:
+        - Carts
+      parameters:
+      - name: cid
+        in: path
+        required: true
+        description: id del carrito
+        schema:
+          type: string
+      - name: pid
+        in: path
+        required: true
+        description: id del producto
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/addProductToCart'
+      responses:
+        200:
+          description: Producto agregado correctamente al carrito
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Carts'
+        500:
+          description: Error interno del servidor, posible fallo en la conexión con la base de datos
+    put:
+      summary: Modifica la cantidad de unidades de un producto dentro del carrito
+      tags:
+        - Carts
+      parameters:
+      - name: cid
+        in: path
+        required: true
+        description: id del carrito
+        schema:
+          $type: string
+      - name: pid
+        in: path
+        required: true
+        description: id del producto
+        schema:
+          $type: string
+      requestBody:
+        required: true
+        content:
+        application/json:
+          schema:
+            $ref: '#components/requestBodies/addProductToCart'
+      responses:
+        200:
+          description: Se modificó la cantidad del producto dentro del carrito
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Carts'
+        400:
+          description: La petición no cumple con los parámetros mínimos necesarios
+        404:
+          description: No se encontró el carrito o el producto indicados
+        500:
+          description: Error interno del servidor, posible fallo en la conexión con la base de datos
+    delete:
+      summary: Elimina un producto de la lista de objetos en el carrito de compras
+      tags:
+        - Carts
+      parameters:
+      - name: cid
+        in: path
+        required: true
+        description: id del carrito
+        schema:
+          $type: string
+      - name: pid
+        in: path
+        required: true
+        description: id del producto
+        schema:
+          $type: string
+      responses:
+        200:
+          description: El producto indicado se eliminó de la lista del carrito de compras
+        500:
+          description: Error interno del servidor, posible fallo en la conexión con la base de datos
+
+components:
+  schemas:
+    Carts:
+      type: object
+      properties:
+        _id: 
+          type: ObjectId
+          description: Identificador autogenerado por Mongo
+        items:
+          type: Array
+          description: Lista de objetos añadidos al carrito
+        subTotal:
+          type: Object
+          properties:
+            type:
+              type: Number
+            default: 0
+            description: Subtotal de sumatoria de productos dentro del carrito
+      example:
+        _id: 65dcad44a51fa327de176a7f
+        subtotal: 9.99
+        items: [{
+          productId: "653dd2efe7ac96549e92f132",
+          quantity: 1,
+          price: 9.99,
+          total: 9.99
+        }]
+  requestBodies:
+    updateListOfProducts:
+      content:
+        application/json:
+          schema:
+            type: array
+            description: Lista de nuevos productos a ser establecidos en el carrito de compras
+            items:
+              type: object
+              properties:
+                productId: 
+                  type: ObjectId
+                  description: Id autogenerado por Mongo
+                quantity:
+                  type: Number
+                  description: Cantidad de unidades del producto agregadas al carrito de compras
+                price:
+                  type: Number
+                  description: Precio unitario
+                total:
+                  type: Number
+                  description: Total de precio unitario multiplicado por cantidad de unidades en el carrito
+      example:
+        productsArray: [{
+          productId: "653dd2efe7ac96549e92f132",
+          quantity: 1,
+          price: 9.99,
+          total: 9.99
+        }]
+      required: true
+    addProductToCart:
+      type: object
+      properties:
+        quantity:
+          type: Number
+          description: Cantidad a agregar al carrito
+      example:
+        quantity: 1
+                

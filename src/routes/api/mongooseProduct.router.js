@@ -35,19 +35,20 @@ router.get('/:pid', async (req, res) => {
   try {
     const pid = req.params.pid
     const product = await productsService.getProductById({ _id: pid })
+    if (!product) return res.status(404).json({ status: 'error', error: `Producto con id: ${pid} no encontrado` })
     res.send({ status: 'success', payload: product })
   } catch (err) {
     req.logger.error({ error: err.message })
-    res.status(400).send({ status: 'error', error: err.message })
+    res.status(500).send({ status: 'error', error: err.message })
   }
 })
 
 router.post('/', passportCall('jwt', { strategyType: 'jwt' }), uploader.array('thumbnail'), async (req, res) => {
-  const userRole = req.user.role
-  if (userRole === undefined) return res.status(401).send({ status: 'error', error: 'Not authenticated' })
-  const authorizedRole = 'premium'
-  if (userRole !== authorizedRole) return res.status(403).send({ status: 'error', error: 'Forbidden' })
   try {
+    if (!req.user) return res.status(401).send({ status: 'error', error: 'Not authenticated. Must login before trying again' })
+    const userRole = req.user.role
+    const authorizedRole = 'premium'
+    if (userRole !== authorizedRole) return res.status(403).send({ status: 'error', error: 'Forbidden' })
     const owner = req.user.id
     const { title, category, description, price, code, stock, status } = req.body
     if (!title || !category || !description || !price || !code || !stock) {
@@ -76,45 +77,52 @@ router.post('/', passportCall('jwt', { strategyType: 'jwt' }), uploader.array('t
     }
     newProduct.thumbnail = thumbnail
     const result = await productsService.createProduct(newProduct)
-    res.send({ status: 'success', payload: result._id })
+    res.status(201).send({ status: 'success', payload: result._id })
   } catch (err) {
-
+    req.logger.error(err)
+    res.status(500).json({ status: 'error', error: err })
   }
 })
 
 router.put('/:pid', async (req, res) => {
-  const pid = req.params.pid
-  const { title, category, description, price, code, stock, status } = req.body
+  try {
+    const pid = req.params.pid
+    const { title, category, description, price, code, stock, status } = req.body
 
-  const updatedProduct = {
-    title,
-    category,
-    description,
-    price,
-    code,
-    stock,
-    status
-  }
+    const updatedProduct = {
+      title,
+      category,
+      description,
+      price,
+      code,
+      stock,
+      status
+    }
 
-  const product = await productsService.getProductById({ _id: pid })
-  if (!product) {
-    return res
-      .status(400)
-      .send({ status: 'error', error: 'Product not found' })
+    const product = await productsService.getProductById({ _id: pid })
+    if (!product) {
+      return res
+        .status(400)
+        .send({ status: 'error', error: 'Product not found' })
+    }
+    await productsService.updateProduct(pid, updatedProduct)
+    res.send({ status: 'success', message: 'Product updated', payload: updatedProduct })
+  } catch (err) {
+    req.logger.error(err)
+    res.status(500).json({ status: 'error', error: 'Unexpected error ocurred', err })
   }
-  await productsService.updateProduct(pid, updatedProduct)
-  res.send({ status: 'success', message: 'Product updated' })
 })
 
 router.delete('/:pid', passportCall('jwt', { strategyType: 'jwt' }), async (req, res) => {
-  const userRole = req.user.role
-  if (userRole === undefined) return res.status(401).send({ error: 'Not authenticated' })
-  const authorizedRoles = ['admin', 'premium']
-  if (!userRole.includes(authorizedRoles)) return res.status(403).send({ status: 'error', error: 'Forbidden' })
   try {
+    if (!req.user) return res.status(401).send({ error: 'Not authenticated. Must login before trying again' })
+    const userRole = req.user.role
+    const authorizedRoles = ['admin', 'premium']
+    if (!userRole.includes(authorizedRoles)) return res.status(403).send({ status: 'error', error: 'Forbidden' })
     const userId = req.user.id
     const pid = req.params.pid
     const product = await productsService.getProductById(pid)
+    if (!product) return res.status(404).json({ status: 'error', error: 'Product not found' })
     const productOwner = product.owner
 
     if (userId !== productOwner) return res.status(403).send({ status: 'error', error: 'Forbidden' })

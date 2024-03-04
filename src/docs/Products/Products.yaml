@@ -1,0 +1,216 @@
+paths:
+  /api/monproducts/:
+    get:
+      summary: Obtiene la lista de todos los productos en la base de datos
+      tags:
+        - Products
+      responses:
+        200:
+          description: Los productos fueron obtenidos satisfactoriamente de la base de datos, el resultado es presentado con paginación, por defecto 10 items por página
+          content:
+            application/json:
+              schema:
+                type:
+                  $ref: '#components/schemas/Products'
+        500:
+          description: Error del servidor, generalmente ocasionado por una solicitud defectuosa o un fallo de conexión con la base de datos
+    post:
+      summary: Realiza la solicitud de creación de producto y posterior añadido a la base de datos
+      tags:
+        - Products
+      requestBody:
+        required: true
+        content:
+          application-json:
+            schema:
+              $ref: '#components/requestBodies/newProduct'
+      responses:
+        201:
+          description: El producto se agregó correctamente a la base de datos
+        400:
+          description: Ocasionado debido a datos necesarios incompletos en la creación del producto
+        401:
+          description: Usuario no autenticado, se debe tener sesion iniciada para realizar esta solicitud
+        403:
+          description: El rol del usuario no cuenta con los permisos necesarios para la creación del producto nuevo
+        500:
+          description: Error interno del servidor, posible fallo en la conexión con la base de datos
+  /api/monproducts/{pid}:
+    get:
+      summary: Obtiene un producto específico por su id
+      tags: 
+        - Products
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: id del producto a consultar
+        schema:
+          $type: String
+      responses:
+        200:
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Products'
+        404:
+          description: Producto no encontrado
+        500:
+          description: Error interno del servidor, posible fallo en la conexion con la base de datos
+    put:
+      summary: Cambiar información de un producto específico usando su id como filtro. El ID no puede ser modificado.
+      tags:
+        - Products
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: id del producto a modificar
+        schema:
+          $type: String
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateProduct'
+      responses:
+        200:
+          description: Producto modificado con exito
+        400:
+          description: Producto no encontrado con el id especificado
+        500:
+          description: Error interno del servidor, posible fallo en la conexión con la base de datos
+    delete:
+      summary: Eliminar producto de la base de datos según id especificado, se requiere tener sesión iniciada
+      tags:
+        - Products
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: id del producto a eliminar
+        schema:
+          $type: String
+      responses:
+        200:
+          description: Producto eliminado con exito
+        401:
+          description: Usuario no autenticado, reintentar posterior a inicio de sesión
+        403:
+          description: Usuario no cumple con los requisitos mínimos para ejecución de la solicitud
+        404:
+          description: Producto no encontrado usando el id indicado
+        500:
+          description: Error interno del servidor, posible fallo en la conexión con la base de datos
+
+
+components:
+  schemas:
+    Products:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Identificador autogenerado por Mongo
+        title:
+          type: String
+          description: Titulo del producto
+        category:
+          type: String
+          description: Categoria a la que pertenece el producto
+        description:
+          type: String
+          description: Descripcion del producto
+        price:
+          type: Number
+          description: Precio del producto
+        thumbnail:
+          type: Array
+          description: Array de rutas de las imágenes asociadas al producto
+        code:
+          type: String
+          description: Código del producto, llamado también SKU en modelos similares
+        stock:
+          type: Number
+          description: Cantidad del producto disponible en total
+        status:
+          type: Boolean
+          description: Hace referencia a la actividad del producto dentro del negocio. True = Disponible, False = No disponible
+        owner:
+          type: ObjectId
+          ref: Users
+          description: Propietario del producto. Hace referencia a productos creados por usuarios con el rol premium
+      example:
+        _id: ObjectId("653dd2efe7ac96549e92f132")
+        title: "title 1"
+        category: "Category TWO"
+        description: "Description 1"
+        price: 9.99
+        thumbnail: [
+          "img/1698550511324-Captura de pantalla 2023-10-24 211527.png"
+        ]
+        code: "10000"
+        stock: 10
+        status: true
+        owner: ObjectId("892dd2ebe7ac96549e92fa274")
+  requestBodies:
+    newProduct:
+      type: object
+      properties:
+        title:
+          type: String
+          description: Nombre del producto
+        category:
+          type: String
+          description: Categoria del producto
+        price:
+          type: Number
+          description: Precio del producto
+        code:
+          type: String
+          description: Código del producto
+        stock:
+          type: Number
+          description: Unidades disponibles
+        owner:
+          type: ObjectId
+          ref: Users
+          description: Propietario del producto en venta
+      example:
+        title: Producto
+        category: Categoría
+        description: Breve descripción del producto
+        price: 12.54
+        code: "100042"
+        stock: 100
+    updateProduct:
+      type: object
+      properties:
+        title:
+          type: String
+          description: Nombre del producto
+        category:
+          type: String
+          description: Categoria del producto
+        price:
+          type: Number
+          description: Precio del producto
+        code:
+          type: String
+          description: Código del producto
+        stock:
+          type: Number
+          description: Unidades disponibles
+        owner:
+          type: ObjectId
+          ref: Users
+          description: Propietario del producto en venta
+      example:
+        title: Producto
+        category: Categoría
+        description: Breve descripción del producto
+        price: 12.54
+        code: "100042"
+        stock: 100

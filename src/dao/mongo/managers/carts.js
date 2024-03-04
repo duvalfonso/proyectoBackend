@@ -60,7 +60,7 @@ export default class DaoCartsManager {
     if (!cart) { throw new Error(`Cart with id: ${cartId} not found!`) }
 
     const productInCart = cart.items.find(item => item.productId._id.toString() === productId)
-    if (!productInCart) { throw new Error(`Product with id: ${productId} not found!`) }
+    if (!productInCart) { throw new Error(`Product with id: ${productId} not found inside the cart!`) }
 
     if (quantity === 0) {
       cart.items = cart.items.filter(item => item.productId._id.toString() !== productId)
@@ -87,7 +87,12 @@ export default class DaoCartsManager {
     const cart = await cartModel.findOne({ _id: cartId })
     if (!cart) { throw new Error(`Cart with id: ${cartId} not found!`) }
 
-    cart.items = productsArray
+    await cartModel.updateOne({ _id: cartId }, { $set: { items: productsArray } })
+    cart.subTotal = cart.items.reduce((acc, item) => acc + item.total, 0)
+    await cart.save()
+
+    const resultantCart = await cartModel.findOne({ _id: cartId })
+    return resultantCart
   }
 
   removeProduct = async (cartId, productId) => {

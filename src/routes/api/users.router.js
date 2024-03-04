@@ -21,6 +21,7 @@ router.get('/profile/carts', passportCall('jwt', { strategyType: 'jwt', session:
 }
 )
 
+router.get('/', usersController.getUsers)
 router.get('/:uid', usersController.getUserById)
 
 router.post('/reset-password', usersController.resetPassword)

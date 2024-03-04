@@ -10,17 +10,23 @@ const getCarts = async (req, res) => {
 }
 
 const createCart = async (req, res) => {
-  const newCart = await cartsService.createCart()
-  res.sendSuccessWithPayload(newCart)
+  try {
+    if (!req.user) return res.status(401).json({ status: 'error', error: 'Must be logged in' })
+    const newCart = await cartsService.createCart()
+    res.sendSuccessWithPayload(newCart)
+  } catch (err) {
+    req.logger.error(err)
+    res.status(500).json({ status: 'error', error: 'Unexpected error ocurred', err })
+  }
 }
 
 const getCartById = async (req, res) => {
   try {
     const { cid } = req.params
 
-    const result = await cartsService.getCartById(cid)
-
-    res.sendSuccessWithPayload(result)
+    const cart = await cartsService.getCartById(cid)
+    if (!cart) return res.status(404).json({ status: 'error', error: 'Not found' })
+    res.sendSuccessWithPayload(cart)
   } catch (err) {
     req.logger.error(err)
     res.sendUnathorized(err)
@@ -49,9 +55,14 @@ const addProduct = async (req, res) => {
 }
 
 const updateQuantity = async (req, res) => {
-  const { cid, pid } = req.params
-  const quantity = req.body.quantity
   try {
+    const { cid, pid } = req.params
+    const quantity = req.body.quantity
+    if (!cid || !pid || !quantity) return res.status(400).json({ status: 'error', error: 'Missing params' })
+    const cart = await cartsService.getCartById(cid)
+    const product = await productsService.getProductById(pid)
+    if (!cart || !product) return res.status(404).json({ status: 'error', error: 'Cart or product not found, double check the ids' })
+
     const updatedQuantity = await cartsService.updateQuantity(cid, pid, quantity)
     res.json({
       status: 'success',
@@ -60,7 +71,7 @@ const updateQuantity = async (req, res) => {
     })
   } catch (err) {
     req.logger.error(err)
-    res.status(400).json({ error: err.message })
+    res.status(500).json({ error: err.message })
   }
 }
 
@@ -83,14 +94,14 @@ const removeProduct = async (req, res) => {
   try {
     const { pid, cid } = req.params
     const result = await cartsService.removeProduct(cid, pid)
-    res.status(201).json({
+    res.status(200).json({
       status: 'success',
       msg: 'Product removed from cart',
       cartData: result
     })
   } catch (err) {
     req.logger.error(err)
-    res.status(400).json({ error: err.message })
+    res.status(500).json({ error: err.message })
   }
 }
 
