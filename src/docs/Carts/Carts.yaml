@@ -138,9 +138,9 @@ paths:
       requestBody:
         required: true
         content:
-        application/json:
-          schema:
-            $ref: '#components/requestBodies/addProductToCart'
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/addProductToCart'
       responses:
         200:
           description: Se modificó la cantidad del producto dentro del carrito

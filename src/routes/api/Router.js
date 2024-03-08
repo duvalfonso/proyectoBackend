@@ -35,39 +35,39 @@ export default class BaseRouter {
     next()
   }
 
-  // handlePolicies = policies => {
-  //   return (req, res, next) => {
-  //     if (policies[0] === 'PUBLIC') return next()
-  //     const user = req.user
-  //     if (policies[0] === 'NO_AUTH' && user) return res.status(401).send({ status: 'error', error: 'Unauthorized' })
-  //     if (policies[0] === 'NO_AUTH' && !user) return next()
-
-  //     if (!user) return res.status(401).send({ status: 'error', error: req.error })
-  //     if (!policies.includes(user.role.toUpperCase())) return res.status(403).send({ status: 'error', error: 'Forbidden' })
-  //     next()
-  //   }
-  // }
-
   handlePolicies = policies => {
     return (req, res, next) => {
       if (policies[0] === 'PUBLIC') return next()
       const user = req.user
+      if (policies[0] === 'NO_AUTH' && user) return res.status(401).send({ status: 'error', error: 'Unauthorized' })
+      if (policies[0] === 'NO_AUTH' && !user) return next()
 
-      if (policies[0] === 'NO_AUTH') {
-        if (user) return res.status(401).send({ status: 'error', error: 'Unauthorized' })
-        return next()
-      }
-
-      if (!user) return res.status(401).send({ status: 'error', error: 'Unauthorized' })
-
-      const userRole = user.role.toLowerCase()
-      if (!policies.includes(userRole)) {
-        return res.status(403).send({ status: 'error', error: 'Forbidden' })
-      }
-
+      if (!user) return res.status(401).send({ status: 'error', error: req.error })
+      if (!policies.includes(user.role.toUpperCase())) return res.status(403).send({ status: 'error', error: 'Forbidden' })
       next()
     }
   }
+
+  // handlePolicies = policies => {
+  //   return (req, res, next) => {
+  //     if (policies[0] === 'PUBLIC') return next()
+  //     const user = req.user
+
+  //     if (policies[0] === 'NO_AUTH') {
+  //       if (user) return res.status(401).send({ status: 'error', error: 'Unauthorized' })
+  //       return next()
+  //     }
+
+  //     if (!user) return res.status(401).send({ status: 'error', error: 'Unauthorized' })
+
+  //     const userRole = user.role.toLowerCase()
+  //     if (!policies.includes(userRole)) {
+  //       return res.status(403).send({ status: 'error', error: 'Forbidden' })
+  //     }
+
+  //     next()
+  //   }
+  // }
 
   applyCallbacks (callbacks) {
     return callbacks.map(callback => async (...params) => {

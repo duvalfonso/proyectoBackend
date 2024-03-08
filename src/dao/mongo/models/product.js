@@ -39,7 +39,7 @@ const schema = new mongoose.Schema({
     default: true
   },
   owner: {
-    type: mongoose.SchemaTypes.ObjectId,
+    type: mongoose.SchemaTypes.ObjectId || 'admin',
     ref: 'Users',
     default: 'admin'
   }

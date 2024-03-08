@@ -1,14 +1,14 @@
 import DTemplates from '../constants/DTemplates.js'
 import MailingService from '../services/MailingService.js'
-import { generateToken } from '../services/auth.js'
+import { generateToken, verifyToken } from '../services/auth.js'
 
 const register = async (req, res) => {
   const mailingService = new MailingService()
-  console.log(req.user)
   try {
     const result = await mailingService.sendMail(req.user.email, DTemplates.WELCOME, { user: req.user })
+    const user = req.user
     console.log(result)
-    res.sendSuccess('Registered')
+    res.sendSuccessWithPayload(user)
   } catch (error) {
     console.error(error)
     res.sendInternalError(error)
@@ -17,14 +17,21 @@ const register = async (req, res) => {
 
 const login = (req, res) => {
   try {
-    const token = generateToken(req.user)
+    const user = req.user
+    const token = generateToken(user)
     res.cookie('authToken', token, {
-      maxAge: 1000 * 3600 * 24,
+      maxAge: 1000 * 3600 * 1,
       httpOnly: true
-    }).sendSuccess('Logged In')
+    }).send({ status: 'success', message: 'Logged In', payload: user })
   } catch (err) {
     console.error(err)
   }
+}
+const current = async (req, res) => {
+  const cookie = req.cookies.authToken
+  const user = verifyToken(cookie)
+  console.log(user)
+  if (user) return res.sendSuccessWithPayload(user)
 }
 
 const logout = (req, res) => {
@@ -35,5 +42,6 @@ const logout = (req, res) => {
 export default {
   login,
   register,
+  current,
   logout
 }

@@ -116,6 +116,7 @@ const clearCart = async (req, res) => {
     })
   } catch (err) {
     req.logger.error(err)
+    res.status(500).json({ status: 'error', err })
   }
 }
 
