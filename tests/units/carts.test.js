@@ -5,7 +5,7 @@ import { cartsService } from '../../src/services/repositories.js'
 describe('Testing Carts Dao', function () {
   before(async function () {
     await mongoose.connect(
-      'mongodb+srv://duvalfonso:LOd0JoF7rWaKU7mT@cluster0.fueracc.mongodb.net/eCommerce-test?retryWrites=true&w=majority'
+      ''
     )
   })
 
