@@ -6,6 +6,9 @@ const requester = supertest('http://localhost:8080')
 
 describe('Super Testing', function () {
   describe('de Sessions', function () {
+    before(function () {
+      this.cookie = {}
+    })
     // it('Debería registrar usuario de forma exitosa.', async function () {
     //   const registerMock = {
     //     firstName: 'super',

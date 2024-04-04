@@ -30,7 +30,6 @@ const login = (req, res) => {
 const current = async (req, res) => {
   const cookie = req.cookies.authToken
   const user = verifyToken(cookie)
-  console.log(user)
   if (user) return res.sendSuccessWithPayload(user)
 }
 

@@ -61,7 +61,7 @@ const updateProduct = async (req, res) => {
     status
   }
 
-  const product = await productsService.getProductBy({ _id: pid })
+  const product = await productsService.getProductById({ _id: pid })
   if (!product) {
     return res
       .status(400)

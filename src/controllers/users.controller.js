@@ -142,6 +142,28 @@ const setNewPass = async (req, res) => {
   }
 }
 
+function fileUploader (uid, filetype, file) {
+  const data = {}
+  Object.assign(data, { avatar: file.filename })
+  const result = usersService.updateUser(uid, data)
+  console.log(result)
+  return result
+}
+
+const uploadAvatar = async (req, res) => {
+  try {
+    const { filetype } = req.params
+    const uid = req.user
+    const { file } = req
+    console.log('file:', file)
+    await fileUploader(uid, filetype, file)
+    res.status(204).end()
+  } catch (err) {
+    req.logger.error({ error: 'Something went wrong', err })
+    res.status(500).json({ status: 'error', error: err.message })
+  }
+}
+
 const deleteUser = async (req, res) => {
   try {
     const { uid } = req.body
@@ -161,6 +183,7 @@ export default {
   updateUserRole,
   resetPassword,
   verifyResetToken,
+  uploadAvatar,
   setNewPass,
   deleteUser
 }

@@ -2,6 +2,7 @@ import { Router } from 'express'
 import UserModel from '../../dao/mongo/models/user.js'
 import usersController from '../../controllers/users.controller.js'
 import { passportCall } from '../../services/auth.js'
+import uploader from '../../services/uploader.js'
 
 const router = Router()
 
@@ -23,7 +24,7 @@ router.get('/profile/carts', passportCall('jwt', { strategyType: 'jwt', session:
 
 router.get('/', usersController.getUsers)
 router.get('/:uid', usersController.getUserById)
-
+router.post('/upload/:filetype', passportCall('jwt', { strategyType: 'jwt', session: false }), uploader.single('avatar'), usersController.uploadAvatar)
 router.post('/reset-password', usersController.resetPassword)
 router.get('/reset-password/:code/:uid', usersController.verifyResetToken)
 router.post('/reset-password/:code/:uid', usersController.setNewPass)
