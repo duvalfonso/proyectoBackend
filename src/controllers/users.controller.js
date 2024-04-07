@@ -50,6 +50,21 @@ const updateUser = async (req, res) => {
   }
 }
 
+const currentCart = async (req, res) => {
+  try {
+    if (!req.user) return res.redirect('/login')
+    if (req.user) {
+      const user = await usersService.getUserBy(req.user.id).populate('cart')
+      res.send({ status: 'success', payload: user })
+    } else {
+      res.status(401).send({ status: 'error', error: 'Unauthorized' })
+    }
+  } catch (err) {
+    req.logger({ error: 'Something went wrong', err })
+    res.status(500).json({ status: 'error', error: err.message, err })
+  }
+}
+
 const updateUserRole = async (req, res) => {
   const { uid } = req.params
   const user = await usersService.getUserBy({ _id: uid })
@@ -180,6 +195,7 @@ export default {
   getUserById,
   createUser,
   updateUser,
+  currentCart,
   updateUserRole,
   resetPassword,
   verifyResetToken,

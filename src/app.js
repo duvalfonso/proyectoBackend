@@ -17,7 +17,7 @@ import swaggerJSDoc from 'swagger-jsdoc'
 import swaggerUiExpress from 'swagger-ui-express'
 
 import SessionsRouter from './routes/api/Sessions.router.js'
-import usersRouter from './routes/api/users.router.js'
+import usersRouter from './routes/api/Users.router.js'
 import monProductsRouter from './routes/api/mongooseProduct.router.js'
 import ticketsRouter from './routes/api/tickets.router.js'
 import CartsRouter from './routes/api/Carts.router.js'
@@ -80,6 +80,7 @@ app.use(passport.initialize())
 
 const sessionsRouter = new SessionsRouter()
 const cartsRouter = new CartsRouter()
+// const usersRouter = new usersRouter()
 
 app.use((req, res, next) => {
   req.io = io
@@ -92,7 +93,7 @@ app.use('/', mockRouter)
 app.use('/loggerTest', loggerTest)
 
 app.use('/api/products', productsRouter)
-app.use('/api/users', usersRouter)
+app.use('/api/users', usersRouter.getRouter())
 app.use('/api/carts', fsCartsRouter)
 
 app.use('/api/monproducts', monProductsRouter)
